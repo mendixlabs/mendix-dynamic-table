@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget id="com.mendix.widget.custom.dynamictable.DynamicTable" needsEntityContext="true" offlineCapable="true"
+        supportedPlatform="Web"
+        xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../node_modules/mendix/custom_widget.xsd">
+    <name>Dynamic Table</name>
+    <description>Dynamic (Tree) Table for Mendix</description>
+    <icon>
+        iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAABp1BMVEUAAABV//9mzP9LtP9Ms/9Jtv9NsvdJsfpLtPpJsfdJsfhJsvhJsvdKsvdJsPhKsPhJsfdJsPhJsfdIsfhJsfdIsPdJsfhJsfhJsPhJsPhIsfhIsPdJsPdKsPdKsfdNsvdOsvdPs/dQs/dRtPdStPdTtPdUtfdWtvdXtvdauPdcuPdeufdeufhguvhiu/hju/hkvPhmvfhnvfhpvvhrv/huwPhvwfhxwfhywvhzwvh4xfl5xfl6xfl8xvl9xvl9x/mByPmCyfmFyvmGyvmJzPmKzPmLzfmNzvqPzvqQz/qT0PqU0PqU0fqX0vqY0vqa0/qe1fqg1vqj1/uk1/un2fup2vut2/uv3Puw3Puw3fuz3vu13/u23/u34Pu44Pu64fu64fy84vy94vy+4/y/4/zD5fzE5fzG5vzH5vzI5/zK6PzL6PzR6/zT7P3U7P3V7f3W7f3Y7v3Z7v3c8P3e8f3f8f3g8f3i8v3l8/3l9P3n9P3r9v7t9/7u9/7v+P7w+P7x+f7y+f70+v71+v74/P75/P76/f77/f78/f78/v79/v7+/v7////6dMsRAAAAG3RSTlMAAwURGxwhMTNic3SEh4iVp7XBzejt7vH5/f6PsMNWAAABsklEQVR4AWIYfGAUjIJRMAqYuYREJKWJAqLCPGwY+jnFpEkBEryMqPr5pEkFgkwo9kuTDviR/S9GhgFSHAgDuKXJAQIIA4TIMkAcEY4i0mQBVrgBkuQZwA43QJo8wIFhQEhEOIBQOutHJozDOP5Crp4e1RhkJ0tKGJFd6oNEdtmJyEIzpaZl5nrRZgaHM/2Pf5/vwXXfyagXgG93bwSAlEolowLMm9w83gibhXH2gKKVdD67gTnWjwCk+VVjMQS4suSnnjMLRVFc9sAHvAX2A9fySaXNBMbEZVUWscaHIMRuqwBgD8hDEbnsRmfjUKJkAQZGCTlO/xWBwIADQLIZBlY441MvfoF1xlFS/4fy+bzXKh4dgNJE7L3eh3tmtuWa+AMcMIY3dgUvZQpGEYmMw2kD7HC+R29UqyoXLaBd0QZxzgXgikLLDSqJTKU5HOcS0MsbA9jPqtwCRvXm2eorBbNIJBw3KJ9O4Yl+AAXdnyaLt7PWN3jRWLvzmAVp94zO5+n41/onfo/UpExxZqI0O7NQr0DhIq9Io7hQpbRYp7hiobRqo6ByFcNWuY6CUTAKRgEAo8X0lBD3V30AAAAASUVORK5CYII=
+    </icon>
+    <properties>
+
+        <!-- ROWS -->
+
+        <propertyGroup caption="Row">
+            <propertyGroup caption="Data Source">
+                <property key="rowEntity" type="entity" required="true" allowNonPersistableEntities="true">
+                    <caption>Row</caption>
+                    <description />
+                </property>
+                <property key="rowDataSource" type="enumeration" defaultValue="xpath">
+                    <caption>Data Source</caption>
+                    <description>Choose how you retrieve rows</description>
+                    <enumerationValues>
+                        <enumerationValue key="xpath">XPath</enumerationValue>
+                        <enumerationValue key="microflow">Microflow</enumerationValue>
+                        <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="rowConstraint" required="false" type="entityConstraint" entityProperty="rowEntity">
+                    <caption>Node constraint</caption>
+                    <description>The xpath constraint on the entity.</description>
+                </property>
+                <property key="rowGetDataMicroflow" type="microflow" required="false">
+                    <caption>Microflow</caption>
+                    <description>Choose 'Microflow' in Data Source and choose a microflow here</description>
+                    <returnType type="Object" isList="true" entityProperty="rowEntity" />
+                </property>
+                <property key="rowGetDataNanoflow" type="nanoflow" required="false">
+                    <caption>Nanoflow</caption>
+                    <description>Choose 'Nanoflow' in Data Source and choose a nanoflow here.</description>
+                    <returnType type="Object" isList="true" entityProperty="rowEntity" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="UI Title">
+                <property key="rowTitleType" type="enumeration" defaultValue="attribute">
+                    <caption>Row Title Type</caption>
+                    <description></description>
+                    <enumerationValues>
+                         <enumerationValue key="attribute">Attribute</enumerationValue>
+                         <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="rowTitleAttr" type="attribute" entityProperty="rowEntity" required="false">
+                    <caption>Row Title Attribute</caption>
+                    <description>Attribute that contains the title. Note that this can contain HTML if you need it.</description>
+                    <attributeTypes>
+                         <attributeType name="String" />
+                    </attributeTypes>
+                </property>
+                <property key="rowTitleNanoflow" type="nanoflow" entityProperty="rowEntity" required="false">
+                    <caption>Row Title Nanoflow</caption>
+                    <description>Choose 'Nanoflow' in Row Title Attribute and choose a nanoflow here. The Nanoflow should return a string and can contain HTML</description>
+                    <returnType type="String" />
+                </property>
+                <property key="rowRenderAsHTML" type="boolean" defaultValue="false">
+                    <caption>Row render as HTML</caption>
+                    <description>Render title as HTML. Note: although we do some client side sanitation for the HTML, in general it is a good practice to do this server side for any input that is created by the user.</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="UI Classes">
+                <property key="rowClassAttr" type="attribute" entityProperty="rowEntity" required="false">
+                    <caption>Row Class Attribute</caption>
+                    <description>Attribute to set an extra class on your row.</description>
+                    <attributeTypes>
+                         <attributeType name="String" />
+                    </attributeTypes>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+
+        <!-- ROW CHILDREN -->
+
+        <propertyGroup caption="Row Children">
+            <propertyGroup caption="Scenario">
+                <property key="childScenario" type="enumeration" defaultValue="disabled">
+                    <caption>Scenario</caption>
+                    <description>Choose if the rows have children and how to retrieve them</description>
+                    <enumerationValues>
+                        <enumerationValue key="disabled">Disabled</enumerationValue>
+                        <enumerationValue key="reference">Reference (full structure)</enumerationValue>
+                        <enumerationValue key="action">Action (dynamic structure)</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Scenario: Reference">
+                <property key="childReference" type="entity" required="false" allowNonPersistableEntities="true" isPath="yes" pathType="referenceSet" entityProperty="rowEntity">
+                    <caption>Child reference</caption>
+                    <description>Choose 'Reference' and it will get the children over reference, through a normal data call. This needs a complete tree-structure, so the widget can determine if the reference set contains any children</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Scenario: Action">
+                <property key="childHasChildAttr" type="attribute" entityProperty="rowEntity" required="false" isPath="optional" pathType="reference">
+                    <caption>Has child attr</caption>
+                    <description>If you do not have a complete tree-structure available (for example, you pick this from a flat list), the widget still needs to know if this row has any children. Make sure this attribute is set.</description>
+                    <attributeTypes>
+                        <attributeType name="Boolean" />
+                    </attributeTypes>
+                </property>
+                <property key="childActionMethod" type="enumeration" defaultValue="microflow">
+                    <caption>Action</caption>
+                    <description>Method how to get the child elements</description>
+                    <enumerationValues>
+                        <enumerationValue key="microflow">Microflow</enumerationValue>
+                        <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="childActionMicroflow" type="microflow" required="false" entityProperty="rowEntity">
+                    <caption>Get child Microflow</caption>
+                    <description />
+                    <returnType type="Object" isList="true" entityProperty="rowEntity" />
+                </property>
+                <property key="childActionNanoflow" type="nanoflow" required="false" entityProperty="rowEntity">
+                    <caption>Get child Nanoflow</caption>
+                    <description>NOTE: Non-persistent entities are discouraged as they have unpredictable behavior combined with Nanoflows.
+                    </description>
+                    <returnType type="Object" isList="true" entityProperty="rowEntity" />
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+
+        <!-- COLUMNS -->
+
+        <propertyGroup caption="Column">
+            <propertyGroup caption="Data Source">
+                <property key="columnEntity" type="entity" required="true" allowNonPersistableEntities="true">
+                    <caption>Column</caption>
+                    <description />
+                </property>
+                <property key="columnDataSource" type="enumeration" defaultValue="xpath">
+                    <caption>Data Source</caption>
+                    <description>Choose how you retrieve columns</description>
+                    <enumerationValues>
+                        <enumerationValue key="xpath">XPath</enumerationValue>
+                        <enumerationValue key="microflow">Microflow</enumerationValue>
+                        <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="columnConstraint" required="false" type="entityConstraint" entityProperty="columnEntity">
+                    <caption>Node constraint</caption>
+                    <description>The xpath constraint on the entity.</description>
+                </property>
+                <property key="columnGetDataMicroflow" type="microflow" required="false">
+                    <caption>Microflow</caption>
+                    <description>Choose 'Microflow' in Data Source and choose a microflow here</description>
+                    <returnType type="Object" isList="true" entityProperty="columnEntity" />
+                </property>
+                <property key="columnGetDataNanoflow" type="nanoflow" required="false">
+                    <caption>Nanoflow</caption>
+                    <description>Choose 'Nanoflow' in Data Source and choose a nanoflow here.</description>
+                    <returnType type="Object" isList="true" entityProperty="columnEntity" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="UI Title">
+                <property key="columnTitleType" type="enumeration" defaultValue="attribute">
+                    <caption>Column Title Type</caption>
+                    <description></description>
+                    <enumerationValues>
+                         <enumerationValue key="attribute">Attribute</enumerationValue>
+                         <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="columnTitleAttr" type="attribute" entityProperty="columnEntity" required="false">
+                    <caption>Column Title Attribute</caption>
+                    <description>Attribute that contains the title. Note that this can contain HTML if you need it.</description>
+                    <attributeTypes>
+                         <attributeType name="String" />
+                    </attributeTypes>
+                </property>
+                <property key="columnTitleNanoflow" type="nanoflow" entityProperty="columnEntity" required="false">
+                    <caption>Column Title Nanoflow</caption>
+                    <description>Choose 'Nanoflow' in Row Title Attribute and choose a nanoflow here. The Nanoflow should return a string and can contain HTML</description>
+                    <returnType type="String" />
+                </property>
+                <property key="columnRenderAsHTML" type="boolean" defaultValue="false">
+                    <caption>Column render as HTML</caption>
+                    <description>Render title as HTML. Note: although we do some client side sanitation for the HTML, in general it is a good practice to do this server side for any input that is created by the user.</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="UI Classes">
+                <property key="columnClassAttr" type="attribute" entityProperty="columnEntity" required="false">
+                    <caption>Column Class Attribute</caption>
+                    <description>Attribute to set an extra class on your column.</description>
+                    <attributeTypes>
+                         <attributeType name="String" />
+                    </attributeTypes>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+
+        <!-- ENTRIES -->
+
+        <propertyGroup caption="Entries">
+            <!-- Entry data -->
+            <propertyGroup caption="Data">
+                <property key="entryEntity" type="entity" required="true" allowNonPersistableEntities="true">
+                    <caption>Entry</caption>
+                    <description>This is the object that binds the Column to the Row.</description>
+                </property>
+                <property key="entryRowReference" type="entity" required="true" entityProperty="entryEntity" isPath="yes" pathType="reference" allowNonPersistableEntities="true">
+                    <caption>Reference to Row</caption>
+                    <description />
+                </property>
+                <property key="entryColumnReference" type="entity" required="true" entityProperty="entryEntity" isPath="yes" pathType="reference" allowNonPersistableEntities="true">
+                    <caption>Reference to Column</caption>
+                    <description />
+                </property>
+            </propertyGroup>
+            <!-- Entry data source -->
+            <propertyGroup caption="Data Source">
+                <property key="entryDataSource" type="enumeration" defaultValue="microflow">
+                    <caption>Data Source</caption>
+                    <description>Choose how you retrieve entries. This uses the Helper Entity (see 'Helper')</description>
+                    <enumerationValues>
+                        <enumerationValue key="microflow">Microflow</enumerationValue>
+                        <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="entryGetDataMicroflow" type="microflow" required="false" entityProperty="helperEntity">
+                    <caption>Microflow</caption>
+                    <description>Choose 'Microflow' in Data Source and choose a microflow here</description>
+                    <returnType type="Object" isList="true" entityProperty="entryEntity" />
+                </property>
+                <property key="entryGetDataNanoflow" type="nanoflow" required="false" entityProperty="helperEntity">
+                    <caption>Nanoflow</caption>
+                    <description>Choose 'Nanoflow' in Data Source and choose a nanoflow here.</description>
+                    <returnType type="Object" isList="true" entityProperty="entryEntity" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="UI Title">
+                <property key="entryTitleType" type="enumeration" defaultValue="attribute">
+                    <caption>Entry Title Type</caption>
+                    <description></description>
+                    <enumerationValues>
+                         <enumerationValue key="attribute">Attribute</enumerationValue>
+                         <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="entryTitleAttr" type="attribute" entityProperty="entryEntity" required="false">
+                    <caption>Entry Title Attribute</caption>
+                    <description>Attribute that contains the title.</description>
+                    <attributeTypes>
+                         <attributeType name="String" />
+                    </attributeTypes>
+                </property>
+                <property key="entryTitleNanoflow" type="nanoflow" entityProperty="entryEntity" required="false">
+                    <caption>Entry Title Nanoflow</caption>
+                    <description>Choose 'Nanoflow' in Entry Title Attribute and choose a nanoflow here. The Nanoflow should return a string and can contain HTML</description>
+                    <returnType type="String" />
+                </property>
+                <property key="entryRenderAsHTML" type="boolean" defaultValue="false">
+                    <caption>Entry render as HTML</caption>
+                    <description>Render title as HTML. Note: although we do some client side sanitation for the HTML, in general it is a good practice to do this server side for any input that is created by the user.</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="UI Classes">
+                <property key="entryClassAttr" type="attribute" entityProperty="entryEntity" required="false">
+                    <caption>Entry Class Attribute</caption>
+                    <description>Attribute to set an extra class on your entry.</description>
+                    <attributeTypes>
+                         <attributeType name="String" />
+                    </attributeTypes>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+
+        <!-- DATA HELPER -->
+
+        <propertyGroup caption="Data Helper">
+            <property key="helperEntity" type="entity" required="true" allowNonPersistableEntities="true">
+                <caption>Entry Helper</caption>
+                <description>This non-persistent entity is used for the following things:
+- Get all the entries for a combination of Columns &amp; Rows. The reason for this is simple: Data retrieval optimization. Using this helper object, we can get all the entries in 1 single action. The widget will figure out where to display the entries.
+- OnClick empty cell (the widget creates and Entry Helper object and sets the reference to the corresponding row &amp; column)
+- Row Selection
+
+This helper should contain the following reference SETS: to Column and to Row. It has an optional reference to your context object.</description>
+            </property>
+            <property key="helperRowReference" type="entity" required="true" entityProperty="helperEntity" isPath="yes" pathType="referenceSet" allowNonPersistableEntities="true">
+                <caption>Reference: Row</caption>
+                <description />
+            </property>
+            <property key="helperColumnReference" type="entity" required="true" entityProperty="helperEntity" isPath="yes" pathType="referenceSet" allowNonPersistableEntities="true">
+                <caption>Reference: Column</caption>
+                <description />
+            </property>
+            <property key="helperContextReference" type="entity" required="false" entityProperty="helperEntity" isPath="yes" pathType="reference" allowNonPersistableEntities="true">
+                <caption>Reference: context</caption>
+                <description>This is an optional reference</description>
+            </property>
+        </propertyGroup>
+
+        <!-- SELECTION -->
+
+        <propertyGroup caption="Selection">
+            <propertyGroup caption="Selection behavior">
+                <property key="selectMode" type="enumeration" defaultValue="none">
+                    <caption>Select Mode</caption>
+                    <description>Make sure you set the Data Helper entity when doing selections!</description>
+                    <enumerationValues>
+                        <enumerationValue key="none">None</enumerationValue>
+                        <enumerationValue key="single">Single</enumerationValue>
+                        <enumerationValue key="multi">Multi</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="selectClickSelect" type="boolean" defaultValue="true">
+                    <caption>Click to select</caption>
+                    <description>If enabled, you can select a row by simply clicking on it. If disabled, you will need to click the checkbox.</description>
+                </property>
+                <property key="selectHideCheckboxes" type="boolean" defaultValue="false">
+                    <caption>Hide checkboxes</caption>
+                    <description>Hides the left column containing the checkboxes.</description>
+                </property>
+            </propertyGroup>
+
+            <propertyGroup caption="Selection onChange">
+                <property key="selectOnChangeAction" type="enumeration" defaultValue="nothing">
+                    <caption>On Change action</caption>
+                    <description>Execute this action when the selection changes</description>
+                    <enumerationValues>
+                        <enumerationValue key="nothing">Nothing</enumerationValue>
+                        <enumerationValue key="microflow">Microflow</enumerationValue>
+                        <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="selectOnChangeMicroflow" type="microflow" required="false" entityProperty="helperEntity">
+                    <caption>Microflow</caption>
+                    <description></description>
+                    <returnType type="Void" />
+                </property>
+                <property key="selectOnChangeNanoflow" type="nanoflow" required="false" entityProperty="helperEntity">
+                    <caption>Nanoflow</caption>
+                    <description></description>
+                    <returnType type="Void" />
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+
+        <!-- EVENTS -->
+
+        <propertyGroup caption="Events">
+            <propertyGroup caption="Row">
+                <property key="eventRowOnClickAction" type="enumeration" defaultValue="nothing">
+                    <caption>Row click action</caption>
+                    <description>This action is executed when you click a row (the first column)</description>
+                    <enumerationValues>
+                            <enumerationValue key="nothing">Nothing</enumerationValue>
+                            <enumerationValue key="microflow">Microflow</enumerationValue>
+                            <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                            <enumerationValue key="open">Open page</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="eventRowClickFormat" type="enumeration" defaultValue="single">
+                    <caption>Row click type</caption>
+                    <description></description>
+                    <enumerationValues>
+                         <enumerationValue key="single">Single</enumerationValue>
+                         <enumerationValue key="double">Double</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="eventRowOnClickMf" type="microflow" required="false" entityProperty="rowEntity">
+                    <caption>Row click Microflow</caption>
+                    <description></description>
+                    <returnType type="Void" />
+                </property>
+                <property key="eventRowOnClickNf" type="nanoflow" required="false" entityProperty="rowEntity">
+                    <caption>Row click Nanoflow</caption>
+                    <description></description>
+                    <returnType type="Void" />
+                </property>
+                <property key="eventRowOnClickForm" type="form" required="false">
+                    <caption>Row click page</caption>
+                    <description>The page to open when a row is clicked</description>
+                </property>
+                <property key="eventRowOnClickOpenPageAs" type="enumeration" defaultValue="content">
+                    <caption>Row click open page as</caption>
+                    <description/>
+                    <enumerationValues>
+                        <enumerationValue key="content">Full page</enumerationValue>
+                        <enumerationValue key="popup">Popup</enumerationValue>
+                        <enumerationValue key="modal">Blocking popup</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Column">
+                <property key="eventColumnOnClickAction" type="enumeration" defaultValue="nothing">
+                    <caption>Column click action</caption>
+                    <description>This action is executed when you click on a column (header row)</description>
+                    <enumerationValues>
+                            <enumerationValue key="nothing">Nothing</enumerationValue>
+                            <enumerationValue key="microflow">Microflow</enumerationValue>
+                            <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                            <enumerationValue key="open">Open page</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="eventColumnClickFormat" type="enumeration" defaultValue="single">
+                    <caption>Column click type</caption>
+                    <description></description>
+                    <enumerationValues>
+                         <enumerationValue key="single">Single</enumerationValue>
+                         <enumerationValue key="double">Double</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="eventColumnOnClickMf" type="microflow" required="false" entityProperty="entryEntity">
+                    <caption>Column click Microflow</caption>
+                    <description></description>
+                    <returnType type="Void" />
+                </property>
+                <property key="eventColumnOnClickNf" type="nanoflow" required="false" entityProperty="entryEntity">
+                    <caption>Column click Nanoflow</caption>
+                    <description></description>
+                    <returnType type="Void" />
+                </property>
+                <property key="eventColumnOnClickForm" type="form" required="false">
+                    <caption>Column click page</caption>
+                    <description>The page to open when an column is clicked</description>
+                </property>
+                <property key="eventColumnOnClickOpenPageAs" type="enumeration" defaultValue="content">
+                    <caption>Column click open page as</caption>
+                    <description/>
+                    <enumerationValues>
+                        <enumerationValue key="content">Full page</enumerationValue>
+                        <enumerationValue key="popup">Popup</enumerationValue>
+                        <enumerationValue key="modal">Blocking popup</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Entry">
+                <property key="eventEntryOnClickAction" type="enumeration" defaultValue="nothing">
+                    <caption>Entry click action</caption>
+                    <description>This action is executed when you click on a cell that has an entry</description>
+                    <enumerationValues>
+                            <enumerationValue key="nothing">Nothing</enumerationValue>
+                            <enumerationValue key="microflow">Microflow</enumerationValue>
+                            <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                            <enumerationValue key="open">Open page</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="eventEntryClickFormat" type="enumeration" defaultValue="single">
+                    <caption>Entry click type</caption>
+                    <description></description>
+                    <enumerationValues>
+                         <enumerationValue key="single">Single</enumerationValue>
+                         <enumerationValue key="double">Double</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="eventEntryOnClickMf" type="microflow" required="false" entityProperty="entryEntity">
+                    <caption>Entry click Microflow</caption>
+                    <description></description>
+                    <returnType type="Void" />
+                </property>
+                <property key="eventEntryOnClickNf" type="nanoflow" required="false" entityProperty="entryEntity">
+                    <caption>Entry click Nanoflow</caption>
+                    <description></description>
+                    <returnType type="Void" />
+                </property>
+                <property key="eventEntryOnClickForm" type="form" required="false">
+                    <caption>Entry click page</caption>
+                    <description>The page to open when an entry is clicked</description>
+                </property>
+                <property key="eventEntryOnClickOpenPageAs" type="enumeration" defaultValue="content">
+                    <caption>Entry click open page as</caption>
+                    <description/>
+                    <enumerationValues>
+                        <enumerationValue key="content">Full page</enumerationValue>
+                        <enumerationValue key="popup">Popup</enumerationValue>
+                        <enumerationValue key="modal">Blocking popup</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Empty">
+               <property key="eventEmptyOnClickAction" type="enumeration" defaultValue="nothing">
+                    <caption>Empty click action</caption>
+                    <description>This action is executed when you click on an empty cell</description>
+                    <enumerationValues>
+                            <enumerationValue key="nothing">Nothing</enumerationValue>
+                            <enumerationValue key="microflow">Microflow</enumerationValue>
+                            <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="eventEmptyClickFormat" type="enumeration" defaultValue="single">
+                    <caption>Empty click type</caption>
+                    <description></description>
+                    <enumerationValues>
+                         <enumerationValue key="single">Single</enumerationValue>
+                         <enumerationValue key="double">Double</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="eventEmptyOnClickMf" type="microflow" required="false" entityProperty="helperEntity">
+                    <caption>Empty click Microflow</caption>
+                    <description>Note: this requires you to set the Entry Helper entity. The widget will create this object, set the association to the Column entity (this is a reference set, but will only contain 1 single reference to a Column), as well as a Row entity (also a reference set)</description>
+                    <returnType type="Void" />
+                </property>
+                <property key="eventEmptyOnClickNf" type="nanoflow" required="false" entityProperty="helperEntity">
+                    <caption>Empty click Nanoflow</caption>
+                    <description>Note: this requires you to set the Entry Helper entity. The widget will create this object, set the association to the Column entity (this is a reference set, but will only contain 1 single reference to a Column), as well as a Row entity (also a reference set)</description>
+                    <returnType type="Void" />
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+
+        <!-- TABLE SETTINGS -->
+
+        <propertyGroup caption="UI settings">
+            <propertyGroup caption="Widths">
+                <property key="settingsTableLeftColumnWidth" type="integer" required="true" defaultValue="200">
+                    <caption>Left column width</caption>
+                    <description>Set pixel width of left column</description>
+                </property>
+                <property key="settingsTableCellColumnWidth" type="integer" required="true" defaultValue="100">
+                    <caption>Cell column width</caption>
+                    <description>Set pixel width of individual cells</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Row/Column Locking">
+                <property key="settingsTableLockHeaderRow" type="boolean" defaultValue="false">
+                    <caption>Lock header row</caption>
+                    <description>This will keep the header row in view while scrolling. Disable this if you experience problems (for example in IE browsers)</description>
+                </property>
+                <property key="settingsTableLockLeftColumn" type="boolean" defaultValue="false">
+                    <caption>Lock left column</caption>
+                    <description>This will keep the left column in view while scrolling. Disable this if you experience problems (for example in IE browsers)</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Size">
+                <property key="settingsWidthUnit" type="enumeration" defaultValue="percentage">
+                    <caption>Width unit</caption>
+                    <description/>
+                    <enumerationValues>
+                        <enumerationValue key="percentage">Percentage</enumerationValue>
+                        <enumerationValue key="pixels">Pixels</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="settingsWidth" type="integer" defaultValue="100">
+                    <caption>Width</caption>
+                    <description/>
+                </property>
+                <property key="settingsHeightUnit" type="enumeration" defaultValue="pixels">
+                    <caption>Height unit</caption>
+                    <description>'Percentage of width' is the aspect ratio, 'Pixels' is absolute. Warning: When using 'Percentage of parent' the parent container must have an absolute height, else nothing is displayed.</description>
+                    <enumerationValues>
+                        <enumerationValue key="percentageOfWidth">Percentage of width</enumerationValue>
+                        <enumerationValue key="pixels">Pixels</enumerationValue>
+                        <enumerationValue key="percentageOfParent">Percentage of parent</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="settingsHeight" type="integer" defaultValue="580">
+                    <caption>Height</caption>
+                    <description/>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+
+    </properties>
+</widget>
