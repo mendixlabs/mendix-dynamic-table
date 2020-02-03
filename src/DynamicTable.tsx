@@ -308,7 +308,7 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
             return;
         }
 
-        this.debug("clickCell", `${_clickType} || ${_nodeType} || ${_obj ? _obj.getGuid() : null}`);
+        this.debug("clickCell", `${_clickType} || ${_nodeType} || ${_obj.getGuid()}`);
 
         const entityName = _obj.getEntity();
         let object: mendix.lib.MxObject | null = null;

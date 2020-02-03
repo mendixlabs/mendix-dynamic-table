@@ -1,6 +1,6 @@
 import homepage from "./pages/home.page";
 
-const badgeValue = "Badge";
+// const badgeValue = "Badge";
 
 describe("DynamicTable", () => {
     it("should render a badge with a caption", () => {

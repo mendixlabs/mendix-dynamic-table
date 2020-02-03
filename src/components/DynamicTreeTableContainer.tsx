@@ -189,12 +189,10 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
                     width: cellWidth,
                     onCell: (record: TableRecord): TableEventListeners => {
                         const empty =
-                            col &&
                             col.dataIndex &&
-                            record &&
                             typeof record[col.dataIndex] !== "undefined" &&
                             record[col.dataIndex] === null;
-                        const colGuid = col && col.dataIndex;
+                        const colGuid = col.dataIndex;
 
                         const extraClass =
                             col.key && record._classObj && record._classObj[col.key] ? record._classObj[col.key] : "";
