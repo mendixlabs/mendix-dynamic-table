@@ -1,7 +1,7 @@
 {
   "name": "dynamictable",
   "widgetName": "DynamicTable",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Dynamic (Tree) Table for Mendix",
   "copyright": "Jelte Lagendijk 2019",
   "author": "Jelte Lagendijk <jelte.lagendijk@mendix.com>",

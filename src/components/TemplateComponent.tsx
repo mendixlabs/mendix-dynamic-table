@@ -27,7 +27,7 @@ export class TemplateComponent extends Component<TemplateComponentProps> {
         }
 
         const __html = sanitize(this.compile(template, data), {
-            USE_PROFILES: {svg: true, svgFilters: true},
+            USE_PROFILES: { svg: true, svgFilters: true },
             ALLOWED_ATTR: ["class", "src", "style"]
         });
 
