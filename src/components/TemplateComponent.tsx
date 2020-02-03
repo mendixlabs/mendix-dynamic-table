@@ -1,6 +1,6 @@
 import { Component, createElement, ReactNode, CSSProperties } from "react";
 import Mustache from "mustache";
-import sanitizeHTML, { IOptions, defaults as sanizeDefaults } from "sanitize-html";
+import { sanitize } from "dompurify";
 
 export type ComponentType = "div" | "span";
 
@@ -26,22 +26,10 @@ export class TemplateComponent extends Component<TemplateComponentProps> {
             return null;
         }
 
-        const allowedAttributes = sanizeDefaults.allowedAttributes;
-
-        allowedAttributes.img = ["src", "srcset"];
-        allowedAttributes["*"] = ["class", "src", "style"];
-
-        const sanitizeOptions: IOptions = {
-            allowedTags: [...sanizeDefaults.allowedTags, "img"],
-            allowedAttributes,
-            selfClosing: sanizeDefaults.selfClosing,
-            allowedSchemes: ["https", "mailto"],
-            allowedSchemesByTag: {},
-            allowedSchemesAppliedToAttributes: ["href", "src", "cite"],
-            allowProtocolRelative: true
-        };
-
-        const __html = sanitizeHTML(this.compile(template, data), sanitizeOptions);
+        const __html = sanitize(this.compile(template, data), {
+            USE_PROFILES: {svg: true, svgFilters: true},
+            ALLOWED_ATTR: ["class", "src", "style"]
+        });
 
         if (type && type === "span") {
             return (
