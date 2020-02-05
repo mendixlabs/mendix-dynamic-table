@@ -8,9 +8,9 @@
 [![GitHub issues](https://img.shields.io/github/issues/JelteMX/mendix-dynamic-table)](https://github.com/JelteMX/mendix-dynamic-table/issues)
 [![DeepScan grade](https://deepscan.io/api/teams/7221/projects/9346/branches/120493/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=7221&pid=9346&bid=120493)
 
-## Dynamic (Tree) Table for Mendix
+## Matrix Widget for Mendix
 
-Mendix Dynamic (Tree) Table using [Ant Design Table](https://ant.design/components/table/) (MIT License). This is inspired on the [Tree Table widget](https://appstore.home.mendix.com/link/app/111095/), but takes objects in the columns as well.
+Mendix Matrix Widget using [Ant Design Table](https://ant.design/components/table/) (MIT License). This is inspired on the [Tree Table widget](https://appstore.home.mendix.com/link/app/111095/), but takes objects in the columns as well.
 
 ![logo](/assets/AppStoreIcon.png)
 
@@ -24,7 +24,7 @@ Show a reference table. Rows & Columns are Mendix objects, Entry objects are in 
 
 ## Features
 
-- Display a tree structure in a table
+- Display a matrix, where rows can have children, like a tree
 - Data Sources: XPath, Microflow, Nanoflow
 - Children: Get over reference, Microflow, Nanoflow
 - Selection of rows (single, multi)
