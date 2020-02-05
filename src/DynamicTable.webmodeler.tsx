@@ -5,7 +5,7 @@ declare function require(name: string): string;
 
 export class preview extends Component<DynamicTableContainerProps> {
     render(): ReactNode {
-        return <div>No preview available for Dynamic Table</div>;
+        return <div>No preview available for Matrix</div>;
     }
 
     // private transformProps(props: DynamicTableContainerProps): DynamicTreeTableContainerProps {

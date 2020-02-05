@@ -54,7 +54,7 @@ const customConfig = {
                     output: {
                         comments: false,
                         beautify: false,
-                        preamble: `/* Dynamic Table Widget || Version ${pkg.version} || Apache 2 LICENSE || Developer: ${pkg.author} || Please report any issues here: https://github.com/JelteMX/mendix-dynamic-table/issues */\n`
+                        preamble: `/* Matrix || Version ${pkg.version} || Apache 2 LICENSE || Developer: ${pkg.author} || Please report any issues here: https://github.com/JelteMX/mendix-dynamic-table/issues */\n`
                         // comments: false
                     },
                     toplevel: false,
