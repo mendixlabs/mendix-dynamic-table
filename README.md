@@ -18,7 +18,7 @@ Show a reference table. Rows & Columns are Mendix objects, Entry objects are in 
 
 ![screenshot](/assets/screenshot.png)
 
-> See test-project [https://dynamictabletest-sandbox.mxapps.io/](https://dynamictabletest-sandbox.mxapps.io/) for a live demo! On the bottom of this page there is a short explanation of the Domain model that is used.
+> See test-project [https://dynamictabletest-sandbox.mxapps.io/](https://dynamictabletest-sandbox.mxapps.io/) for a live demo! On the bottom of this page there is a short explanation of the Domain model that is used. Test-project can be downloaded [here](https://github.com/JelteMX/widget-test-projects#matrix-widget)
 
 > Missing features? See TODO at the bottom to see which items are still on the TODO list. If you find other bugs, please report this as an issue [here](https://github.com/JelteMX/mendix-dynamic-table/issues)
 
