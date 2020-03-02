@@ -9,6 +9,7 @@
 [![GitHub release](https://img.shields.io/github/release/JelteMX/mendix-dynamic-table)](https://github.com/JelteMX/mendix-dynamic-table/releases/latest)
 [![GitHub issues](https://img.shields.io/github/issues/JelteMX/mendix-dynamic-table)](https://github.com/JelteMX/mendix-dynamic-table/issues)
 [![DeepScan grade](https://deepscan.io/api/teams/7221/projects/9346/branches/120493/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=7221&pid=9346&bid=120493)
+[![Available](https://img.shields.io/badge/Test%20Project-available-green.svg)](https://github.com/JelteMX/widget-test-projects)
 
 ## Matrix Widget for Mendix
 
