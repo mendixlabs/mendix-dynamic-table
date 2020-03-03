@@ -1,10 +1,13 @@
+[![Apache License](https://img.shields.io/badge/license-Apache%202.0-orange.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Dependencies](https://david-dm.org/JelteMX/mendix-dynamic-table.svg)]([https://david-dm.org/JelteMX/mendix-dynamic-table](https://david-dm.org/JelteMX/mendix-dynamic-table))
 [![DevDependencies](https://david-dm.org/JelteMX/mendix-dynamic-table/dev-status.svg)]([https://david-dm.org/JelteMX/mendix-dynamic-table?type=dev](https://david-dm.org/JelteMX/mendix-dynamic-table?type=dev))
 [![Support](https://img.shields.io/badge/Support-Community%20(no%20active%20support)-orange.svg)](https://docs.mendix.com/developerportal/app-store/app-store-content-support)
+![WM](https://img.shields.io/badge/Webmodeler%20compatible-NO-red.svg)
 [![Studio](https://img.shields.io/badge/Studio%20version-8.0%2B-blue.svg)](https://appstore.home.mendix.com/link/modeler/)
 [![GitHub release](https://img.shields.io/github/release/JelteMX/mendix-dynamic-table)](https://github.com/JelteMX/mendix-dynamic-table/releases/latest)
 [![GitHub issues](https://img.shields.io/github/issues/JelteMX/mendix-dynamic-table)](https://github.com/JelteMX/mendix-dynamic-table/issues)
 [![DeepScan grade](https://deepscan.io/api/teams/7221/projects/9346/branches/120493/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=7221&pid=9346&bid=120493)
+[![Available](https://img.shields.io/badge/Test%20Project-available-green.svg)](https://github.com/JelteMX/widget-test-projects)
 
 ## Matrix Widget for Mendix
 
@@ -16,7 +19,7 @@ Show a reference table. Rows & Columns are Mendix objects, Entry objects are in 
 
 ![screenshot](/assets/screenshot.png)
 
-> See test-project [https://dynamictabletest-sandbox.mxapps.io/](https://dynamictabletest-sandbox.mxapps.io/) for a live demo! On the bottom of this page there is a short explanation of the Domain model that is used.
+> See test-project [https://dynamictabletest-sandbox.mxapps.io/](https://dynamictabletest-sandbox.mxapps.io/) for a live demo! On the bottom of this page there is a short explanation of the Domain model that is used. Test-project can be downloaded [here](https://github.com/JelteMX/widget-test-projects#matrix-widget)
 
 > Missing features? See TODO at the bottom to see which items are still on the TODO list. If you find other bugs, please report this as an issue [here](https://github.com/JelteMX/mendix-dynamic-table/issues)
 
