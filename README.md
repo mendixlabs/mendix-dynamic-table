@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/JelteMX/mendix-dynamic-table.svg?branch=master)](https://travis-ci.org/JelteMX/mendix-dynamic-table)
-[![Coverage Status](https://coveralls.io/repos/github/JelteMX/mendix-dynamic-table/badge.svg?branch=master)](https://coveralls.io/github/JelteMX/mendix-dynamic-table?branch=master)
 [![Dependencies](https://david-dm.org/JelteMX/mendix-dynamic-table.svg)]([https://david-dm.org/JelteMX/mendix-dynamic-table](https://david-dm.org/JelteMX/mendix-dynamic-table))
 [![DevDependencies](https://david-dm.org/JelteMX/mendix-dynamic-table/dev-status.svg)]([https://david-dm.org/JelteMX/mendix-dynamic-table?type=dev](https://david-dm.org/JelteMX/mendix-dynamic-table?type=dev))
 [![Support](https://img.shields.io/badge/Support-Community%20(no%20active%20support)-orange.svg)](https://docs.mendix.com/developerportal/app-store/app-store-content-support)
