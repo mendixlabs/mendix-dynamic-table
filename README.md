@@ -1,6 +1,6 @@
 [![Apache License](https://img.shields.io/badge/license-Apache%202.0-orange.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Dependencies](https://david-dm.org/JelteMX/mendix-dynamic-table.svg)]([https://david-dm.org/JelteMX/mendix-dynamic-table](https://david-dm.org/JelteMX/mendix-dynamic-table))
-[![DevDependencies](https://david-dm.org/JelteMX/mendix-dynamic-table/dev-status.svg)]([https://david-dm.org/JelteMX/mendix-dynamic-table?type=dev](https://david-dm.org/JelteMX/mendix-dynamic-table?type=dev))
+[![Dependencies](https://david-dm.org/JelteMX/mendix-dynamic-table.svg)](https://david-dm.org/JelteMX/mendix-dynamic-table)
+[![DevDependencies](https://david-dm.org/JelteMX/mendix-dynamic-table/dev-status.svg)](https://david-dm.org/JelteMX/mendix-dynamic-table?type=dev)
 [![Support](https://img.shields.io/badge/Support-Community%20(no%20active%20support)-orange.svg)](https://docs.mendix.com/developerportal/app-store/app-store-content-support)
 ![WM](https://img.shields.io/badge/Webmodeler%20compatible-NO-red.svg)
 [![Studio](https://img.shields.io/badge/Studio%20version-8.0%2B-blue.svg)](https://appstore.home.mendix.com/link/modeler/)
