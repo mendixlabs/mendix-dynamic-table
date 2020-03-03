@@ -3,7 +3,7 @@ import { Action, ActionReturn, NodeType } from "../DynamicTable";
 import { fetchAttr } from "@jeltemx/mendix-react-widget-utils";
 import { ReactNode, createElement } from "react";
 import classNames from "classnames";
-import { TemplateComponent } from "../components/TemplateComponent";
+import TemplateComponent from "react-mustache-template-component";
 
 export type ClickCellType = "single" | "double";
 
