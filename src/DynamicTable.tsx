@@ -69,12 +69,17 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
 
         this.bindMethods();
 
+        const sortingTypeRows = props.rowSortingAttribute !== "" ? props.rowSortingOrder : "none";
+        const sortingTypeColumns = props.columnSortingAttribute !== "" ? props.columnSortingOrder : "none";
+
         const validationMessages = this.getRuntimeValidations(props);
 
         this.store = new TableStore({
             entriesLoader: this.entriesLoad,
             onSelectionChange: this.onSelectionChange,
-            validationMessages
+            validationMessages,
+            sortingTypeRows,
+            sortingTypeColumns
         });
     }
 
@@ -151,6 +156,7 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
         this.setAxisObjects = this.setAxisObjects.bind(this);
         this.getTitleMethod = this.getTitleMethod.bind(this);
         this.getClassMethod = this.getClassMethod.bind(this);
+        this.getSortMethod = this.getSortMethod.bind(this);
         this.expanderFunc = this.expanderFunc.bind(this);
         this.onSelectionChange = this.onSelectionChange.bind(this);
         this.clickTypeHandler = this.clickTypeHandler.bind(this);
@@ -249,19 +255,23 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
             rowTitleAttr,
             rowTitleNanoflow,
             rowClassAttr,
+            rowSortingAttribute,
             columnTitleType,
             columnTitleAttr,
             columnTitleNanoflow,
-            columnClassAttr
+            columnClassAttr,
+            columnSortingAttribute
         } = this.props;
         if (axis === "row") {
             this.store.setRows(objects, this.rowChildReference, this.hasChildAttr, parent, clean, {
                 classMethod: this.getClassMethod(rowClassAttr),
+                sortMethod: this.getSortMethod(rowSortingAttribute),
                 titleMethod: this.getTitleMethod(rowTitleType, rowTitleAttr, rowTitleNanoflow, "row")
             });
         } else {
             this.store.setColumns(objects, {
                 classMethod: this.getClassMethod(columnClassAttr),
+                sortMethod: this.getSortMethod(columnSortingAttribute),
                 titleMethod: this.getTitleMethod(columnTitleType, columnTitleAttr, columnTitleNanoflow, "column")
             });
         }
@@ -296,6 +306,15 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
                 return "";
             }
             return obj.get(attr) as string;
+        };
+    }
+
+    private getSortMethod(attr: string): (obj: mendix.lib.MxObject) => string | null | number {
+        return (obj: mendix.lib.MxObject): string | null | number => {
+            if (!obj || !attr) {
+                return null;
+            }
+            return obj.get(attr) as string | number;
         };
     }
 

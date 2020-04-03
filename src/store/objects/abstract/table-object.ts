@@ -2,11 +2,13 @@ import { computed, flow, observable, action } from "mobx";
 import { ReactNode } from "react";
 
 export type TitleMethod = ((obj: mendix.lib.MxObject) => Promise<ReactNode | string>) | null;
+export type SortMethod = ((obj: mendix.lib.MxObject) => string | number | null) | null;
 export type ClassMethod = ((obj: mendix.lib.MxObject) => string) | null;
 
 export interface TableObjectGetOptions {
     titleMethod?: TitleMethod;
     classMethod?: ClassMethod;
+    sortMethod?: SortMethod;
 }
 
 export interface TableObjectOptions {
@@ -23,9 +25,11 @@ export class TableObject {
 
     public _titleMethod: TitleMethod;
     public _classMethod: ClassMethod;
+    public _sortMethod: SortMethod;
 
     @observable _title: string;
     @observable _class: string;
+    @observable _sortKey: null | string | number;
 
     fixTitle = flow(function*(this: TableObject) {
         if (this._titleMethod) {
@@ -36,18 +40,20 @@ export class TableObject {
 
     constructor(opts: TableObjectOptions) {
         const { mxObject, changeHandler, getMethods } = opts;
-        const { titleMethod, classMethod } = getMethods;
+        const { titleMethod, classMethod, sortMethod } = getMethods;
         this._obj = mxObject;
 
         this._title = "";
+        this._sortKey = null;
         this._class = "";
         this._titleMethod = titleMethod || null;
         this._classMethod = classMethod || null;
+        this._sortMethod = sortMethod || null;
         this._changeHandler = changeHandler || ((): void => {});
         this._subscriptions = [];
 
         if (!changeHandler) {
-            console.log("No changehandler for ", opts);
+            console.warn("No changehandler for ", opts);
         }
 
         if (titleMethod) {
@@ -56,6 +62,10 @@ export class TableObject {
 
         if (classMethod) {
             this.fixClass();
+        }
+
+        if (sortMethod) {
+            this.fixSorting();
         }
 
         if (this._obj) {
@@ -78,6 +88,13 @@ export class TableObject {
     }
 
     @action
+    fixSorting(): void {
+        if (this._sortMethod) {
+            this._sortKey = this._sortMethod(this._obj);
+        }
+    }
+
+    @action
     resetSubscription(): void {
         const { subscribe } = window.mx.data;
         this.clearSubscriptions();
@@ -95,6 +112,8 @@ export class TableObject {
                             }
                         } else {
                             this.fixTitle();
+                            this.fixSorting();
+                            this.fixClass();
                         }
                     });
                 }
@@ -111,6 +130,11 @@ export class TableObject {
     @computed
     get className(): string {
         return this._class;
+    }
+
+    @computed
+    get sortKey(): string | number | null {
+        return this._sortKey;
     }
 
     @computed

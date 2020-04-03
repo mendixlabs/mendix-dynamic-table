@@ -8,8 +8,11 @@ import { TableRecord } from "../util/table";
 import arrayToTree, { Tree } from "array-to-tree";
 import { getObject } from "@jeltemx/mendix-react-widget-utils";
 import { ValidationMessage } from "../util/validation";
+import sortBy from "lodash/sortBy";
 
 configure({ enforceActions: "observed" });
+
+export type SortingType = "none" | "asc" | "desc";
 
 export interface TableGuids {
     context: string | null;
@@ -26,6 +29,8 @@ export interface TableStoreConstructorOptions {
     reloadEntriesOnColChange?: boolean;
     reloadEntriesOnRowChange?: boolean;
     validationMessages?: ValidationMessage[];
+    sortingTypeRows?: SortingType;
+    sortingTypeColumns?: SortingType;
 }
 
 export interface TableObjectOptions extends TableObjectGetOptions {}
@@ -54,12 +59,22 @@ export class TableStore {
 
     private reloadOnColChange = true;
     private reloadOnRowChange = true;
+    private sortingTypeRows: SortingType;
+    private sortingTypeColumns: SortingType;
 
     // Flow actions
 
     // Constructor
     constructor(opts: TableStoreConstructorOptions) {
-        const { contextObject, subscriptionHandler, onSelectionChange, entriesLoader, validationMessages } = opts;
+        const {
+            contextObject,
+            subscriptionHandler,
+            onSelectionChange,
+            entriesLoader,
+            validationMessages,
+            sortingTypeRows,
+            sortingTypeColumns
+        } = opts;
 
         this.isLoading = false;
         this.contextObject = contextObject || null;
@@ -71,6 +86,9 @@ export class TableStore {
 
         this.entriesLoader = entriesLoader || ((_guids: TableGuids): void => {});
         this.validationMessages = validationMessages || [];
+
+        this.sortingTypeRows = sortingTypeRows || "none";
+        this.sortingTypeColumns = sortingTypeColumns || "none";
 
         if (entriesLoader) {
             when(
@@ -354,13 +372,21 @@ export class TableStore {
 
     @computed
     get tableColumns(): Array<ColumnProps<TableRecord>> {
-        return this.columns.map(col => ({
+        const columns = this.columns.map(col => ({
             key: col.id,
             dataIndex: col.id,
             guid: col.guid,
             title: col.title,
+            sortKey: col._sortKey,
             className: col.className
         }));
+
+        if (this.sortingTypeColumns === "asc") {
+            return sortBy(columns, "sortKey");
+        } else if (this.sortingTypeColumns === "desc") {
+            return sortBy(columns, "sortKey").reverse();
+        }
+        return columns;
     }
 
     @computed
@@ -369,6 +395,7 @@ export class TableStore {
             const record: TableRecord = {
                 key: row.guid,
                 guid: row.guid,
+                sortKey: row.sortKey,
                 "row-title": row.title,
                 _classObj: {},
                 _className: row.className
@@ -399,7 +426,14 @@ export class TableStore {
             return record;
         });
 
-        const tree = arrayToTree(rows, arrayToTreeOpts);
+        const tree = arrayToTree(
+            this.sortingTypeRows === "none"
+                ? rows
+                : this.sortingTypeRows === "asc"
+                ? sortBy(rows, "sortKey")
+                : sortBy(rows, "sortKey").reverse(),
+            arrayToTreeOpts
+        );
         return tree.filter(treeEl => typeof treeEl._parent === "undefined" && !treeEl._parent);
     }
 

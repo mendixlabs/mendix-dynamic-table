@@ -31,7 +31,7 @@ Show a reference table. Rows & Columns are Mendix objects, Entry objects are in 
 - Selection of rows (single, multi)
 - Events: Click/Double click on Row, Column, Entry or empty field
 
-> This widget is about 580Kb uncompressed, so in your cloud deployment this widget should take about 150 Kb of network resources
+> This widget is about 600Kb uncompressed, so in your cloud deployment this widget should take about 160 Kb of network resources
 
 Tested:
 

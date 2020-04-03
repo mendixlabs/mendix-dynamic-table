@@ -40,6 +40,27 @@
                     <returnType type="Object" isList="true" entityProperty="rowEntity" />
                 </property>
             </propertyGroup>
+            <propertyGroup caption="Sorting">
+                <property key="rowSortingAttribute" type="attribute" entityProperty="rowEntity" required="false">
+                    <caption>Row Sorting Attribute</caption>
+                    <description>This attribute can be used to sort the data. If not set, it will use the order of objects coming from the data source</description>
+                    <attributeTypes>
+                        <attributeType name="String" />
+                        <attributeType name="AutoNumber" />
+                        <attributeType name="Decimal" />
+                        <attributeType name="Integer" />
+                        <attributeType name="Long" />
+                    </attributeTypes>
+                </property>
+                <property key="rowSortingOrder" type="enumeration" defaultValue="asc">
+                    <caption>Row Sorting Order</caption>
+                    <description>The sorting order only applies when using the sorting attribute</description>
+                    <enumerationValues>
+                         <enumerationValue key="asc">Ascending</enumerationValue>
+                         <enumerationValue key="desc">Descending</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </propertyGroup>
             <propertyGroup caption="UI Title">
                 <property key="rowTitleType" type="enumeration" defaultValue="attribute">
                     <caption>Row Title Type</caption>
@@ -157,6 +178,27 @@
                     <caption>Nanoflow</caption>
                     <description>Choose 'Nanoflow' in Data Source and choose a nanoflow here.</description>
                     <returnType type="Object" isList="true" entityProperty="columnEntity" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Sorting">
+                <property key="columnSortingAttribute" type="attribute" entityProperty="columnEntity" required="false">
+                    <caption>Column Sorting Attribute</caption>
+                    <description>This attribute can be used to sort the data. If not set, it will use the order of objects coming from the data source</description>
+                    <attributeTypes>
+                        <attributeType name="String" />
+                        <attributeType name="AutoNumber" />
+                        <attributeType name="Decimal" />
+                        <attributeType name="Integer" />
+                        <attributeType name="Long" />
+                    </attributeTypes>
+                </property>
+                <property key="columnSortingOrder" type="enumeration" defaultValue="asc">
+                    <caption>Column Sorting Order</caption>
+                    <description>The sorting order only applies when using the sorting attribute</description>
+                    <enumerationValues>
+                         <enumerationValue key="asc">Ascending</enumerationValue>
+                         <enumerationValue key="desc">Descending</enumerationValue>
+                    </enumerationValues>
                 </property>
             </propertyGroup>
             <propertyGroup caption="UI Title">
