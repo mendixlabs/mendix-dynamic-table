@@ -12,6 +12,7 @@ export type SelectionMode = "none" | "single" | "multi";
 export type ClickType = "single" | "double";
 export type SimpleAction = "nothing" | "microflow" | "nanoflow";
 export type FullAction = "nothing" | "microflow" | "nanoflow" | "open";
+export type SortingType = "asc" | "desc";
 
 export namespace TableStyle {
     export type HeightUnitType = "percentageOfWidth" | "percentageOfParent" | "pixels";
@@ -52,6 +53,8 @@ interface DynamicTableRowProps {
     rowConstraint: string;
     rowGetDataMicroflow: string;
     rowGetDataNanoflow: Nanoflow;
+    rowSortingAttribute: string;
+    rowSortingOrder: SortingType;
     rowTitleType: TitleDataSourceType;
     rowTitleAttr: string;
     rowTitleNanoflow: Nanoflow;
@@ -74,6 +77,8 @@ interface DynamicTableColumnProps {
     columnConstraint: string;
     columnGetDataMicroflow: string;
     columnGetDataNanoflow: Nanoflow;
+    columnSortingAttribute: string;
+    columnSortingOrder: SortingType;
     columnTitleType: TitleDataSourceType;
     columnTitleAttr: string;
     columnTitleNanoflow: Nanoflow;
