@@ -47,6 +47,7 @@ export class TableStore {
     public entriesLoader: (guids: TableGuids, setStore: boolean, clean: boolean) => void;
 
     @observable public isLoading: boolean;
+    @observable public waitingForAxis: boolean;
     @observable public contextObject: mendix.lib.MxObject | null;
     @observable public columns: ColumnObject[] = [];
     @observable public rows: RowObject[] = [];
@@ -59,6 +60,7 @@ export class TableStore {
 
     private reloadOnColChange = true;
     private reloadOnRowChange = true;
+    private hasEntriesLoader = false;
     private sortingTypeRows: SortingType;
     private sortingTypeColumns: SortingType;
 
@@ -77,6 +79,7 @@ export class TableStore {
         } = opts;
 
         this.isLoading = false;
+        this.waitingForAxis = false;
         this.contextObject = contextObject || null;
         this.subscriptionHandler = subscriptionHandler || ((): void => {});
         this.onSelectionChangeHandler = onSelectionChange || ((): void => {});
@@ -85,12 +88,29 @@ export class TableStore {
         this.executeOnSelectionChange = this.executeOnSelectionChange.bind(this);
 
         this.entriesLoader = entriesLoader || ((_guids: TableGuids): void => {});
+        this.hasEntriesLoader = typeof entriesLoader !== "undefined";
         this.validationMessages = validationMessages || [];
 
         this.sortingTypeRows = sortingTypeRows || "none";
         this.sortingTypeColumns = sortingTypeColumns || "none";
+    }
 
-        if (entriesLoader) {
+    // Other actions
+    @action
+    public setContext(obj?: mendix.lib.MxObject): void {
+        this.contextObject = obj || null;
+        this.resetTable();
+    }
+
+    @action resetTable(): void {
+        this.columns.forEach(col => col.clearSubscriptions());
+        this.rows.forEach(row => row.clearSubscriptions());
+        this.entries.forEach(entry => entry.clearSubscriptions());
+        this.columns = [];
+        this.rows = [];
+        this.entries = [];
+        if (this.hasEntriesLoader && !this.waitingForAxis) {
+            this.waitingForAxis = true;
             when(
                 () => {
                     return this.hasColumns && this.hasRows;
@@ -99,15 +119,10 @@ export class TableStore {
                     if (!this.disabled) {
                         this.entriesLoader(this.tableGuids, true, true);
                     }
+                    this.waitingForAxis = false;
                 }
             );
         }
-    }
-
-    // Other actions
-    @action
-    public setContext(obj?: mendix.lib.MxObject): void {
-        this.contextObject = obj || null;
     }
 
     @action
