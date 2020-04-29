@@ -451,12 +451,12 @@ This helper should contain the following reference SETS: to Column and to Row. I
                          <enumerationValue key="double">Double</enumerationValue>
                     </enumerationValues>
                 </property>
-                <property key="eventColumnOnClickMf" type="microflow" required="false" entityProperty="entryEntity">
+                <property key="eventColumnOnClickMf" type="microflow" required="false" entityProperty="columnEntity">
                     <caption>Column click Microflow</caption>
                     <description></description>
                     <returnType type="Void" />
                 </property>
-                <property key="eventColumnOnClickNf" type="nanoflow" required="false" entityProperty="entryEntity">
+                <property key="eventColumnOnClickNf" type="nanoflow" required="false" entityProperty="columnEntity">
                     <caption>Column click Nanoflow</caption>
                     <description></description>
                     <returnType type="Void" />
