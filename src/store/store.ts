@@ -406,6 +406,9 @@ export class TableStore {
 
     @computed
     get tableRows(): Tree<TableRecord[]> {
+        // console.log('store.computed.tableRows', this.waitingForAxis);
+        // console.time('compute');
+
         const rows = this.rows.map(row => {
             const record: TableRecord = {
                 key: row.guid,
@@ -415,12 +418,12 @@ export class TableStore {
                 _classObj: {},
                 _className: row.className
             };
-            this.entries.forEach(entry => {
-                if (entry.row === row.guid && entry.col) {
+            this.entries
+                .filter(e => e.row === row.guid && e.col)
+                .forEach(entry => {
                     record[`col-${entry.col}`] = entry.title;
                     record._classObj[`col-${entry.col}`] = entry.className;
-                }
-            });
+                });
             this.tableColumns.forEach(col => {
                 if (col.key && typeof record[col.key] === "undefined") {
                     record[col.key] = null;
@@ -449,6 +452,8 @@ export class TableStore {
                 : sortBy(rows, "sortKey").reverse(),
             arrayToTreeOpts
         );
+
+        // console.timeEnd('compute');
         return tree.filter(treeEl => typeof treeEl._parent === "undefined" && !treeEl._parent);
     }
 

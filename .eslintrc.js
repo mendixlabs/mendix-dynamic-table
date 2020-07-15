@@ -7,6 +7,7 @@ module.exports = {
         "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/no-empty-function": "warn",
         "react/no-find-dom-node": "off",
-        "react/no-deprecated": "warn"
+        "react/no-deprecated": "warn",
+        "react/prop-types": "warn"
     }
 };

@@ -1,6 +1,5 @@
 import { TitleDataSourceType, Nanoflow } from "../../typings/DynamicTableProps";
 import { Action, ActionReturn, NodeType } from "../DynamicTable";
-import { fetchAttr } from "@jeltemx/mendix-react-widget-utils";
 import { ReactNode, createElement } from "react";
 import classNames from "classnames";
 import TemplateComponent from "react-mustache-template-component";
@@ -37,30 +36,12 @@ const clickDebounce = (callback: () => void): void => {
     }, DEBOUNCE);
 };
 
-export const getTitleFromObject = async (obj: mendix.lib.MxObject, opts: GetTitleOptions): Promise<ReactNode> => {
-    let titleText = "";
-    let isEmptyTitle = false;
-
-    try {
-        if (obj) {
-            const { titleType, attribute, nanoflow, executeAction } = opts;
-
-            if (titleType === "attribute" && attribute) {
-                titleText = (await fetchAttr(obj, attribute)) as string;
-            } else if (titleType === "nanoflow" && nanoflow && nanoflow.nanoflow) {
-                titleText = (await executeAction({ nanoflow }, true, obj)) as string;
-            }
-        }
-    } catch (e) {
-        console.warn(e);
-        titleText = "";
-    }
-
-    if (titleText === "") {
-        titleText = "\u00A0";
-        isEmptyTitle = true;
-    }
-
+export const getTitleNode = (
+    titleText: string,
+    isEmptyTitle: boolean,
+    obj: mendix.lib.MxObject,
+    opts: GetTitleOptions
+): ReactNode => {
     const onClick = (): void =>
         clickDebounce((): void => {
             opts.onClickMethod && opts.onClickMethod(obj, opts.nodeType);
@@ -91,6 +72,57 @@ export const getTitleFromObject = async (obj: mendix.lib.MxObject, opts: GetTitl
             {titleText}
         </span>
     );
+};
+
+export const getTitleFromObject = async (obj: mendix.lib.MxObject, opts: GetTitleOptions): Promise<ReactNode> => {
+    let titleText = "";
+    let isEmptyTitle = false;
+
+    try {
+        if (obj) {
+            const { titleType, attribute, nanoflow, executeAction } = opts;
+
+            if (titleType === "attribute" && attribute) {
+                titleText = obj.get(attribute) as string;
+            } else if (titleType === "nanoflow" && nanoflow && nanoflow.nanoflow) {
+                titleText = (await executeAction({ nanoflow }, true, obj)) as string;
+            }
+        }
+    } catch (e) {
+        console.warn(e);
+        titleText = "";
+    }
+
+    if (titleText === "") {
+        titleText = "\u00A0";
+        isEmptyTitle = true;
+    }
+
+    return getTitleNode(titleText, isEmptyTitle, obj, opts);
+};
+
+export const getStaticTitleFromObject = (obj: mendix.lib.MxObject, opts: GetTitleOptions): ReactNode => {
+    let titleText = "";
+    let isEmptyTitle = false;
+
+    try {
+        if (obj) {
+            const { titleType, attribute } = opts;
+            if (titleType === "attribute" && attribute) {
+                titleText = obj.get(attribute) as string;
+            }
+        }
+    } catch (e) {
+        console.warn(e);
+        titleText = "";
+    }
+
+    if (titleText === "") {
+        titleText = "\u00A0";
+        isEmptyTitle = true;
+    }
+
+    return getTitleNode(titleText, isEmptyTitle, obj, opts);
 };
 
 export const getEmptyEntryTitle = (opts: GetEmptyTitleOptions): ReactNode => {

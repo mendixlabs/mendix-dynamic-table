@@ -39,10 +39,8 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
 
     render(): ReactNode {
         const { selectMode, clickToSelect, store, hideSelectBoxes, className, ui } = this.props;
-        const { tableColumns, tableRows, isLoading, selectedRowsIds, width } = store;
 
-        const { removeValidationMessage, validationMessages } = store;
-        const removeValidation = removeValidationMessage.bind(store);
+        const removeValidation = store.removeValidationMessage.bind(store);
 
         const clearDebounce = (): void => {
             if (this.debounce !== null) {
@@ -58,7 +56,7 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
                     this.debounce = window.setTimeout(() => {
                         // this.onRowClick(record);
                         if (selectMode && selectMode !== "none" && clickToSelect) {
-                            const selected = [...selectedRowsIds];
+                            const selected = [...store.selectedRowsIds];
                             const findKey = selected.findIndex(s => s === record.key);
                             const isSelected = findKey !== -1;
                             if (isSelected && selectMode === "single") {
@@ -89,14 +87,14 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
         if (selectMode && selectMode !== "none") {
             rowSelection = {
                 type: "checkbox",
-                selectedRowKeys: selectedRowsIds,
+                selectedRowKeys: store.selectedRowsIds,
                 onChange: (keys: string[]): void => {
                     if (selectMode === "multi") {
                         store.setSelected(keys);
                     }
                 },
                 onSelectAll: (): void => {
-                    if (selectMode === "single" && selectedRowsIds.length > 0) {
+                    if (selectMode === "single" && store.selectedRowsIds.length > 0) {
                         store.setSelected([]);
                     }
                 },
@@ -128,15 +126,15 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
                 heightUnit={ui.settingsHeightUnit}
             >
                 <Table
-                    columns={this.getColumns(tableColumns)}
-                    dataSource={tableRows}
-                    loading={isLoading}
+                    columns={this.getColumns(store.tableColumns)}
+                    dataSource={store.tableRows}
+                    loading={store.isLoading}
                     onExpand={this.onExpand}
                     onRow={onRow}
                     rowSelection={rowSelection}
                     pagination={false}
                     rowClassName={this.onRowClassName}
-                    scroll={{ x: width || true, y: scrollY }}
+                    scroll={{ x: store.width || true, y: scrollY }}
                     size="small"
                 />
                 <ReactResizeDetector
@@ -157,7 +155,7 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
                     className
                 )}
             >
-                <Alerts validationMessages={validationMessages} remove={removeValidation} />
+                <Alerts validationMessages={store.validationMessages} remove={removeValidation} />
                 {containerIfNotDisabled}
             </div>
         );

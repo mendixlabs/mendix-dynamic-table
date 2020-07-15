@@ -25,8 +25,8 @@ import {
     entityIsPersistable
 } from "@jeltemx/mendix-react-widget-utils";
 import { createHelperObject } from "./util/helperobject";
-import { getTitleFromObject, ClickCellType } from "./util/titlehelper";
-import { TitleMethod } from "./store/objects/abstract/table-object";
+import { getTitleFromObject, ClickCellType, getStaticTitleFromObject } from "./util/titlehelper";
+import { TitleMethod, TableObjectGetOptions, StaticTitleMethod } from "./store/objects/abstract/table-object";
 import { TableRecord } from "./util/table";
 import { getObject } from "@jeltemx/mendix-react-widget-utils";
 import { ValidateExtraProps, validateProps } from "./util/validation";
@@ -263,17 +263,52 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
             columnSortingAttribute
         } = this.props;
         if (axis === "row") {
-            this.store.setRows(objects, this.rowChildReference, this.hasChildAttr, parent, clean, {
+            const tableOptions: TableObjectGetOptions = {
                 classMethod: this.getClassMethod(rowClassAttr),
-                sortMethod: this.getSortMethod(rowSortingAttribute),
-                titleMethod: this.getTitleMethod(rowTitleType, rowTitleAttr, rowTitleNanoflow, "row")
-            });
+                sortMethod: this.getSortMethod(rowSortingAttribute)
+            };
+
+            if (rowTitleType === "attribute" && rowTitleAttr) {
+                tableOptions.staticTitleMethod = this.getTitleMethod(
+                    rowTitleType,
+                    rowTitleAttr,
+                    rowTitleNanoflow,
+                    "row"
+                ) as StaticTitleMethod;
+            } else {
+                tableOptions.titleMethod = this.getTitleMethod(
+                    rowTitleType,
+                    rowTitleAttr,
+                    rowTitleNanoflow,
+                    "row"
+                ) as TitleMethod;
+            }
+
+            this.store.setRows(objects, this.rowChildReference, this.hasChildAttr, parent, clean, tableOptions);
         } else {
-            this.store.setColumns(objects, {
+            const tableOptions: TableObjectGetOptions = {
                 classMethod: this.getClassMethod(columnClassAttr),
-                sortMethod: this.getSortMethod(columnSortingAttribute),
-                titleMethod: this.getTitleMethod(columnTitleType, columnTitleAttr, columnTitleNanoflow, "column")
-            });
+                sortMethod: this.getSortMethod(columnSortingAttribute)
+                // titleMethod: this.getTitleMethod(columnTitleType, columnTitleAttr, columnTitleNanoflow, "column")
+            };
+
+            if (columnTitleType === "attribute" && columnTitleAttr) {
+                tableOptions.staticTitleMethod = this.getTitleMethod(
+                    columnTitleType,
+                    columnTitleAttr,
+                    columnTitleNanoflow,
+                    "column"
+                ) as StaticTitleMethod;
+            } else {
+                tableOptions.titleMethod = this.getTitleMethod(
+                    columnTitleType,
+                    columnTitleAttr,
+                    columnTitleNanoflow,
+                    "column"
+                ) as TitleMethod;
+            }
+
+            this.store.setColumns(objects, tableOptions);
         }
     }
 
@@ -282,11 +317,25 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
         attribute: string,
         nanoflow: Nanoflow,
         nodeType: NodeType = "unknown"
-    ): TitleMethod {
+    ): TitleMethod | StaticTitleMethod {
         const renderAsHTML =
             (this.props.rowRenderAsHTML && nodeType === "row") ||
             (this.props.columnRenderAsHTML && nodeType === "column") ||
             (this.props.entryRenderAsHTML && nodeType === "entry");
+
+        if (titleType === "attribute" && attribute) {
+            return (obj: mendix.lib.MxObject): ReactNode =>
+                getStaticTitleFromObject(obj, {
+                    attribute,
+                    executeAction: this.executeAction,
+                    nanoflow,
+                    titleType,
+                    nodeType,
+                    onClickMethod: () => this.clickTypeHandler(obj, nodeType, "single"),
+                    onDoubleClickMethod: () => this.clickTypeHandler(obj, nodeType, "double"),
+                    renderAsHTML
+                });
+        }
         return (obj: mendix.lib.MxObject): Promise<ReactNode> =>
             getTitleFromObject(obj, {
                 attribute,
@@ -486,10 +535,33 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
 
             if (entryObjects) {
                 if (setStore) {
-                    this.store.setEntries(entryObjects, this.entryRowReference, this.entryColumnReference, clean, {
-                        classMethod: this.getClassMethod(entryClassAttr),
-                        titleMethod: this.getTitleMethod(entryTitleType, entryTitleAttr, entryTitleNanoflow, "entry")
-                    });
+                    const entriesOptions: TableObjectGetOptions = {
+                        classMethod: this.getClassMethod(entryClassAttr)
+                    };
+
+                    if (entryTitleType === "attribute" && entryTitleAttr) {
+                        entriesOptions.staticTitleMethod = this.getTitleMethod(
+                            entryTitleType,
+                            entryTitleAttr,
+                            entryTitleNanoflow,
+                            "entry"
+                        ) as StaticTitleMethod;
+                    } else {
+                        entriesOptions.titleMethod = this.getTitleMethod(
+                            entryTitleType,
+                            entryTitleAttr,
+                            entryTitleNanoflow,
+                            "entry"
+                        ) as TitleMethod;
+                    }
+
+                    this.store.setEntries(
+                        entryObjects,
+                        this.entryRowReference,
+                        this.entryColumnReference,
+                        clean,
+                        entriesOptions
+                    );
                 } else {
                     return entryObjects;
                 }
@@ -541,10 +613,34 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
             const entries = await this.entriesLoad(guids, false);
             if (entries) {
                 const { entryTitleType, entryTitleAttr, entryTitleNanoflow, entryClassAttr } = this.props;
-                this.store.setEntries(entries, this.entryRowReference, this.entryColumnReference, false, {
-                    classMethod: this.getClassMethod(entryClassAttr),
-                    titleMethod: this.getTitleMethod(entryTitleType, entryTitleAttr, entryTitleNanoflow, "entry")
-                });
+
+                const entriesOptions: TableObjectGetOptions = {
+                    classMethod: this.getClassMethod(entryClassAttr)
+                };
+
+                if (entryTitleType === "attribute" && entryTitleAttr) {
+                    entriesOptions.staticTitleMethod = this.getTitleMethod(
+                        entryTitleType,
+                        entryTitleAttr,
+                        entryTitleNanoflow,
+                        "entry"
+                    ) as StaticTitleMethod;
+                } else {
+                    entriesOptions.titleMethod = this.getTitleMethod(
+                        entryTitleType,
+                        entryTitleAttr,
+                        entryTitleNanoflow,
+                        "entry"
+                    ) as TitleMethod;
+                }
+
+                this.store.setEntries(
+                    entries,
+                    this.entryRowReference,
+                    this.entryColumnReference,
+                    false,
+                    entriesOptions
+                );
             }
         }
         this.store.setLoading(false);
