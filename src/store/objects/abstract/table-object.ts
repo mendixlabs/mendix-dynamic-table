@@ -2,11 +2,13 @@ import { computed, flow, observable, action } from "mobx";
 import { ReactNode } from "react";
 
 export type TitleMethod = ((obj: mendix.lib.MxObject) => Promise<ReactNode | string>) | null;
+export type StaticTitleMethod = ((obj: mendix.lib.MxObject) => ReactNode | string) | null;
 export type SortMethod = ((obj: mendix.lib.MxObject) => string | number | null) | null;
 export type ClassMethod = ((obj: mendix.lib.MxObject) => string) | null;
 
 export interface TableObjectGetOptions {
     titleMethod?: TitleMethod;
+    staticTitleMethod?: StaticTitleMethod;
     classMethod?: ClassMethod;
     sortMethod?: SortMethod;
 }
@@ -15,6 +17,7 @@ export interface TableObjectOptions {
     mxObject: mendix.lib.MxObject;
     changeHandler?: (guid?: string, removedCb?: (removed: boolean) => void) => void | Promise<void>;
     getMethods: TableObjectGetOptions;
+    title?: string;
 }
 
 export class TableObject {
@@ -24,6 +27,7 @@ export class TableObject {
     public _changeHandler: (guid?: string, removedCb?: (removed: boolean) => void) => void;
 
     public _titleMethod: TitleMethod;
+    public _staticTitleMethod: StaticTitleMethod;
     public _classMethod: ClassMethod;
     public _sortMethod: SortMethod;
 
@@ -40,13 +44,14 @@ export class TableObject {
 
     constructor(opts: TableObjectOptions) {
         const { mxObject, changeHandler, getMethods } = opts;
-        const { titleMethod, classMethod, sortMethod } = getMethods;
+        const { titleMethod, staticTitleMethod, classMethod, sortMethod } = getMethods;
         this._obj = mxObject;
 
-        this._title = "";
+        this._title = opts.title || "";
         this._sortKey = null;
         this._class = "";
         this._titleMethod = titleMethod || null;
+        this._staticTitleMethod = staticTitleMethod || null;
         this._classMethod = classMethod || null;
         this._sortMethod = sortMethod || null;
         this._changeHandler = changeHandler || ((): void => {});
@@ -58,6 +63,9 @@ export class TableObject {
 
         if (titleMethod) {
             this.fixTitle();
+        } else if (staticTitleMethod) {
+            // @ts-ignore
+            this._title = staticTitleMethod(mxObject);
         }
 
         if (classMethod) {
@@ -111,7 +119,13 @@ export class TableObject {
                                 window.logger.debug(`Removed: ${this._type} || ${guid}`);
                             }
                         } else {
-                            this.fixTitle();
+                            if (this._titleMethod) {
+                                this.fixTitle();
+                            } else if (this._staticTitleMethod) {
+                                // @ts-ignore
+                                this._title = this._staticTitleMethod(this._obj);
+                            }
+
                             this.fixSorting();
                             this.fixClass();
                         }

@@ -64,7 +64,7 @@
             <propertyGroup caption="UI Title">
                 <property key="rowTitleType" type="enumeration" defaultValue="attribute">
                     <caption>Row Title Type</caption>
-                    <description></description>
+                    <description>Warning: When rendering large datasets, it is advised to only use an Attribute, not a Nanoflow. Using a Nanoflow for your title slows down the rendering of the table.</description>
                     <enumerationValues>
                          <enumerationValue key="attribute">Attribute</enumerationValue>
                          <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
@@ -204,7 +204,7 @@
             <propertyGroup caption="UI Title">
                 <property key="columnTitleType" type="enumeration" defaultValue="attribute">
                     <caption>Column Title Type</caption>
-                    <description></description>
+                    <description>Warning: When rendering large datasets, it is advised to only use an Attribute, not a Nanoflow. Using a Nanoflow for your title slows down the rendering of the table.</description>
                     <enumerationValues>
                          <enumerationValue key="attribute">Attribute</enumerationValue>
                          <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
@@ -280,7 +280,7 @@
             <propertyGroup caption="UI Title">
                 <property key="entryTitleType" type="enumeration" defaultValue="attribute">
                     <caption>Entry Title Type</caption>
-                    <description></description>
+                    <description>Warning: When rendering large datasets, it is advised to only use an Attribute, not a Nanoflow. Using a Nanoflow for your title slows down the rendering of the table.</description>
                     <enumerationValues>
                          <enumerationValue key="attribute">Attribute</enumerationValue>
                          <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
