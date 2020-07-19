@@ -1,5 +1,5 @@
 // import { CSSProperties } from "react";
-import { ICommonWidgetProps, INanoflow } from "@jeltemx/mendix-react-widget-utils";
+import { ICommonWidgetProps, INanoflow, OpenPageAs } from "@jeltemx/mendix-react-widget-utils";
 
 export interface Nanoflow extends INanoflow {}
 export interface CommonProps extends ICommonWidgetProps {}
@@ -25,21 +25,21 @@ export interface DynamicTableEventProps {
     eventRowOnClickMf: string;
     eventRowOnClickNf: Nanoflow;
     eventRowOnClickForm: string;
-    eventRowOnClickOpenPageAs: PageLocation;
+    eventRowOnClickOpenPageAs: OpenPageAs;
 
     eventColumnOnClickAction: FullAction;
     eventColumnClickFormat: ClickType;
     eventColumnOnClickMf: string;
     eventColumnOnClickNf: Nanoflow;
     eventColumnOnClickForm: string;
-    eventColumnOnClickOpenPageAs: PageLocation;
+    eventColumnOnClickOpenPageAs: OpenPageAs;
 
     eventEntryOnClickAction: FullAction;
     eventEntryClickFormat: ClickType;
     eventEntryOnClickMf: string;
     eventEntryOnClickNf: Nanoflow;
     eventEntryOnClickForm: string;
-    eventEntryOnClickOpenPageAs: PageLocation;
+    eventEntryOnClickOpenPageAs: OpenPageAs;
 
     eventEmptyOnClickAction: SimpleAction;
     eventEmptyClickFormat: ClickType;

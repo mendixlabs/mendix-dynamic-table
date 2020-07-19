@@ -4,10 +4,10 @@ import { RowObject, RowObjectOptions } from "./objects/row";
 import { EntryObject } from "./objects/entry";
 import { TableObjectGetOptions } from "./objects/abstract/table-object";
 import { ColumnProps } from "antd/es/table";
-import { TableRecord } from "../util/table";
+import { TableRecord } from "../lib/interfaces";
 import arrayToTree, { Tree } from "array-to-tree";
 import { getObject } from "@jeltemx/mendix-react-widget-utils";
-import { ValidationMessage } from "../util/validation";
+import { ValidationMessage } from "../lib/validation";
 import sortBy from "lodash/sortBy";
 
 configure({ enforceActions: "observed" });

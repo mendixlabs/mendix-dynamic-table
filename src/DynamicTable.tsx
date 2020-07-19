@@ -1,40 +1,30 @@
 import { Component, ReactNode, createElement } from "react";
 import { findDOMNode } from "react-dom";
 import { hot } from "react-hot-loader/root";
-
-import {
-    DynamicTableContainerProps,
-    DataSource,
-    Nanoflow,
-    TitleDataSourceType,
-    DynamicTableSettingsProps
-} from "../typings/DynamicTableProps";
-import { DynamicTreeTableContainer } from "./components/DynamicTreeTableContainer";
-
-import "./ui/DynamicTable.scss";
-import { TableStore, TableGuids } from "./store/store";
 import {
     fetchByXpath,
-    IAction,
     getObjectContextFromObjects,
-    executeMicroflow,
-    executeNanoFlow,
-    openPage,
+    getObject,
     getObjects,
     ValidationMessage,
-    entityIsPersistable
+    entityIsPersistable,
+    executeAction
 } from "@jeltemx/mendix-react-widget-utils";
-import { createHelperObject } from "./util/helperobject";
-import { getTitleFromObject, ClickCellType, getStaticTitleFromObject } from "./util/titlehelper";
-import { TitleMethod, TableObjectGetOptions, StaticTitleMethod } from "./store/objects/abstract/table-object";
-import { TableRecord } from "./util/table";
-import { getObject } from "@jeltemx/mendix-react-widget-utils";
-import { ValidateExtraProps, validateProps } from "./util/validation";
 
-export type AxisSelection = "row" | "column";
-export interface Action extends IAction {}
-export type ActionReturn = string | number | boolean | mendix.lib.MxObject | mendix.lib.MxObject[] | void;
-export type NodeType = "unknown" | "row" | "column" | "entry";
+import "./ui/DynamicTable.scss";
+
+import { DynamicTableContainerProps, DataSource, Nanoflow, TitleDataSourceType } from "../typings/DynamicTableProps";
+import { DynamicTreeTableContainer } from "./components/DynamicTreeTableContainer";
+
+import { TableStore, TableGuids } from "./store/store";
+import { TitleMethod, TableObjectGetOptions, StaticTitleMethod } from "./store/objects/abstract/table-object";
+
+import { createHelperObject } from "./lib/helperobject";
+import { getTitleFromObject, ClickCellType, getStaticTitleFromObject } from "./lib/titlehelper";
+import { validateProps } from "./lib/validation";
+import { Action, NodeType, AxisSelection, ActionReturn, TableRecord } from "./lib/interfaces";
+import { getClassMethod, getSortMethod, prepareAction, ActionPreparation } from "./lib/methods";
+import { getPartialUIProps } from "./lib/props";
 
 class DynamicTable extends Component<DynamicTableContainerProps> {
     private store: TableStore;
@@ -106,31 +96,10 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
 
     render(): ReactNode {
         const { selectMode, selectClickSelect, selectHideCheckboxes, selectOnChangeAction } = this.props;
-        const {
-            settingsTableCellColumnWidth,
-            settingsTableLeftColumnWidth,
-            settingsHeight,
-            settingsHeightUnit,
-            settingsTableLockHeaderRow,
-            settingsTableLockLeftColumn,
-            settingsWidth,
-            settingsWidthUnit
-        } = this.props;
-        const uiProps: DynamicTableSettingsProps = {
-            settingsHeight,
-            settingsHeightUnit,
-            settingsTableCellColumnWidth,
-            settingsTableLeftColumnWidth,
-            settingsTableLockHeaderRow,
-            settingsTableLockLeftColumn,
-            settingsWidth,
-            settingsWidthUnit
-        };
 
         let selectionMode = selectMode;
         if (
             selectMode !== "none" &&
-            // buttonBar === null &&
             !(selectClickSelect && selectMode === "single") &&
             selectOnChangeAction === "nothing"
         ) {
@@ -145,7 +114,7 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
                 expanderFunc={this.expanderFunc}
                 emptyClickHandler={this.clickEmptyHandler}
                 clickToSelect={selectClickSelect}
-                ui={uiProps}
+                ui={getPartialUIProps(this.props)}
             />
         );
     }
@@ -155,8 +124,6 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
         this.executeAction = this.executeAction.bind(this);
         this.setAxisObjects = this.setAxisObjects.bind(this);
         this.getTitleMethod = this.getTitleMethod.bind(this);
-        this.getClassMethod = this.getClassMethod.bind(this);
-        this.getSortMethod = this.getSortMethod.bind(this);
         this.expanderFunc = this.expanderFunc.bind(this);
         this.onSelectionChange = this.onSelectionChange.bind(this);
         this.clickTypeHandler = this.clickTypeHandler.bind(this);
@@ -165,45 +132,29 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
     }
 
     private getRuntimeValidations(props: DynamicTableContainerProps): ValidationMessage[] {
-        const runTimeValidations: ValidateExtraProps = {};
-
-        if (props.helperEntity !== "" && entityIsPersistable(props.helperEntity)) {
-            runTimeValidations.noPersistentHelper = true;
-        }
-
-        return validateProps(props, runTimeValidations);
+        return validateProps(props, {
+            noPersistentHelper: props.helperEntity !== "" && entityIsPersistable(props.helperEntity)
+        });
     }
 
     private fetchData(obj: mendix.lib.MxObject): void {
-        const {
-            rowEntity,
-            rowDataSource,
-            rowConstraint,
-            rowGetDataMicroflow,
-            rowGetDataNanoflow,
-            columnEntity,
-            columnDataSource,
-            columnConstraint,
-            columnGetDataMicroflow,
-            columnGetDataNanoflow
-        } = this.props;
         this.fetchAxisData(
             "row",
             obj,
-            rowEntity,
-            rowDataSource,
-            rowConstraint,
-            rowGetDataMicroflow,
-            rowGetDataNanoflow
+            this.props.rowEntity,
+            this.props.rowDataSource,
+            this.props.rowConstraint,
+            this.props.rowGetDataMicroflow,
+            this.props.rowGetDataNanoflow
         );
         this.fetchAxisData(
             "column",
             obj,
-            columnEntity,
-            columnDataSource,
-            columnConstraint,
-            columnGetDataMicroflow,
-            columnGetDataNanoflow
+            this.props.columnEntity,
+            this.props.columnDataSource,
+            this.props.columnConstraint,
+            this.props.columnGetDataMicroflow,
+            this.props.columnGetDataNanoflow
         );
     }
 
@@ -250,36 +201,24 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
         clean = true,
         parent: string | null = null
     ): void {
-        const {
-            rowTitleType,
-            rowTitleAttr,
-            rowTitleNanoflow,
-            rowClassAttr,
-            rowSortingAttribute,
-            columnTitleType,
-            columnTitleAttr,
-            columnTitleNanoflow,
-            columnClassAttr,
-            columnSortingAttribute
-        } = this.props;
         if (axis === "row") {
             const tableOptions: TableObjectGetOptions = {
-                classMethod: this.getClassMethod(rowClassAttr),
-                sortMethod: this.getSortMethod(rowSortingAttribute)
+                classMethod: getClassMethod(this.props.rowClassAttr),
+                sortMethod: getSortMethod(this.props.rowSortingAttribute)
             };
 
-            if (rowTitleType === "attribute" && rowTitleAttr) {
+            if (this.props.rowTitleType === "attribute" && this.props.rowTitleAttr) {
                 tableOptions.staticTitleMethod = this.getTitleMethod(
-                    rowTitleType,
-                    rowTitleAttr,
-                    rowTitleNanoflow,
+                    this.props.rowTitleType,
+                    this.props.rowTitleAttr,
+                    this.props.rowTitleNanoflow,
                     "row"
                 ) as StaticTitleMethod;
             } else {
                 tableOptions.titleMethod = this.getTitleMethod(
-                    rowTitleType,
-                    rowTitleAttr,
-                    rowTitleNanoflow,
+                    this.props.rowTitleType,
+                    this.props.rowTitleAttr,
+                    this.props.rowTitleNanoflow,
                     "row"
                 ) as TitleMethod;
             }
@@ -287,23 +226,22 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
             this.store.setRows(objects, this.rowChildReference, this.hasChildAttr, parent, clean, tableOptions);
         } else {
             const tableOptions: TableObjectGetOptions = {
-                classMethod: this.getClassMethod(columnClassAttr),
-                sortMethod: this.getSortMethod(columnSortingAttribute)
-                // titleMethod: this.getTitleMethod(columnTitleType, columnTitleAttr, columnTitleNanoflow, "column")
+                classMethod: getClassMethod(this.props.columnClassAttr),
+                sortMethod: getSortMethod(this.props.columnSortingAttribute)
             };
 
-            if (columnTitleType === "attribute" && columnTitleAttr) {
+            if (this.props.columnTitleType === "attribute" && this.props.columnTitleAttr) {
                 tableOptions.staticTitleMethod = this.getTitleMethod(
-                    columnTitleType,
-                    columnTitleAttr,
-                    columnTitleNanoflow,
+                    this.props.columnTitleType,
+                    this.props.columnTitleAttr,
+                    this.props.columnTitleNanoflow,
                     "column"
                 ) as StaticTitleMethod;
             } else {
                 tableOptions.titleMethod = this.getTitleMethod(
-                    columnTitleType,
-                    columnTitleAttr,
-                    columnTitleNanoflow,
+                    this.props.columnTitleType,
+                    this.props.columnTitleAttr,
+                    this.props.columnTitleNanoflow,
                     "column"
                 ) as TitleMethod;
             }
@@ -349,24 +287,6 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
             });
     }
 
-    private getClassMethod(attr: string): (obj: mendix.lib.MxObject) => string {
-        return (obj: mendix.lib.MxObject): string => {
-            if (!obj || !attr) {
-                return "";
-            }
-            return obj.get(attr) as string;
-        };
-    }
-
-    private getSortMethod(attr: string): (obj: mendix.lib.MxObject) => string | null | number {
-        return (obj: mendix.lib.MxObject): string | null | number => {
-            if (!obj || !attr) {
-                return null;
-            }
-            return obj.get(attr) as string | number;
-        };
-    }
-
     private async clickTypeHandler(
         _obj: mendix.lib.MxObject,
         _nodeType: NodeType = "unknown",
@@ -378,82 +298,61 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
 
         this.debug("clickCell", `${_clickType} || ${_nodeType} || ${_obj.getGuid()}`);
 
-        const entityName = _obj.getEntity();
-        let object: mendix.lib.MxObject | null = null;
-        const action: Action = {};
+        let nodeAction: ActionPreparation = {};
 
         switch (_nodeType) {
             case "column":
-                if (entityName === this.props.columnEntity) {
-                    object = _obj;
-                }
-                if (this.props.eventColumnClickFormat !== _clickType) {
-                    break;
-                }
-                if (this.props.eventColumnOnClickAction === "open" && this.props.eventColumnOnClickForm) {
-                    action.page = {
-                        pageName: this.props.eventColumnOnClickForm,
-                        openAs: this.props.eventColumnOnClickOpenPageAs
-                    };
-                } else if (this.props.eventColumnOnClickAction === "microflow" && this.props.eventColumnOnClickMf) {
-                    action.microflow = this.props.eventColumnOnClickMf;
-                } else if (
-                    this.props.eventColumnOnClickAction === "nanoflow" &&
-                    this.props.eventColumnOnClickNf.nanoflow
-                ) {
-                    action.nanoflow = this.props.eventColumnOnClickNf;
-                }
+                nodeAction = prepareAction(
+                    _obj,
+                    _clickType,
+                    this.props.columnEntity,
+                    this.props.eventColumnClickFormat,
+                    this.props.eventColumnOnClickAction,
+                    this.props.eventColumnOnClickForm,
+                    this.props.eventColumnOnClickOpenPageAs,
+                    this.props.eventColumnOnClickMf,
+                    this.props.eventColumnOnClickNf
+                );
                 break;
             case "row":
-                if (entityName === this.props.rowEntity) {
-                    object = _obj;
-                }
-                if (this.props.eventRowClickFormat !== _clickType) {
-                    break;
-                }
-                if (this.props.eventRowOnClickAction === "open" && this.props.eventRowOnClickForm) {
-                    action.page = {
-                        pageName: this.props.eventRowOnClickForm,
-                        openAs: this.props.eventRowOnClickOpenPageAs
-                    };
-                } else if (this.props.eventRowOnClickAction === "microflow" && this.props.eventRowOnClickMf) {
-                    action.microflow = this.props.eventRowOnClickMf;
-                } else if (this.props.eventRowOnClickAction === "nanoflow" && this.props.eventRowOnClickNf.nanoflow) {
-                    action.nanoflow = this.props.eventRowOnClickNf;
-                }
+                nodeAction = prepareAction(
+                    _obj,
+                    _clickType,
+                    this.props.rowEntity,
+                    this.props.eventRowClickFormat,
+                    this.props.eventRowOnClickAction,
+                    this.props.eventRowOnClickForm,
+                    this.props.eventRowOnClickOpenPageAs,
+                    this.props.eventRowOnClickMf,
+                    this.props.eventRowOnClickNf
+                );
                 break;
             case "entry":
-                if (entityName === this.props.entryEntity) {
-                    object = _obj;
-                }
-                if (this.props.eventEntryClickFormat !== _clickType) {
-                    break;
-                }
-                if (this.props.eventEntryOnClickAction === "open" && this.props.eventEntryOnClickForm) {
-                    action.page = {
-                        pageName: this.props.eventEntryOnClickForm,
-                        openAs: this.props.eventEntryOnClickOpenPageAs
-                    };
-                } else if (this.props.eventEntryOnClickAction === "microflow" && this.props.eventEntryOnClickMf) {
-                    action.microflow = this.props.eventEntryOnClickMf;
-                } else if (
-                    this.props.eventEntryOnClickAction === "nanoflow" &&
-                    this.props.eventEntryOnClickNf.nanoflow
-                ) {
-                    action.nanoflow = this.props.eventEntryOnClickNf;
-                }
+                nodeAction = prepareAction(
+                    _obj,
+                    _clickType,
+                    this.props.entryEntity,
+                    this.props.eventEntryClickFormat,
+                    this.props.eventEntryOnClickAction,
+                    this.props.eventEntryOnClickForm,
+                    this.props.eventEntryOnClickOpenPageAs,
+                    this.props.eventEntryOnClickMf,
+                    this.props.eventEntryOnClickNf
+                );
                 break;
             default:
                 break;
         }
 
         if (
-            object !== null &&
-            (typeof action.microflow !== "undefined" ||
-                typeof action.nanoflow !== "undefined" ||
-                typeof action.page !== "undefined")
+            nodeAction.object &&
+            nodeAction.object !== null &&
+            nodeAction.action &&
+            (typeof nodeAction.action.microflow !== "undefined" ||
+                typeof nodeAction.action.nanoflow !== "undefined" ||
+                typeof nodeAction.action.page !== "undefined")
         ) {
-            this.executeAction(action, true, object);
+            this.executeAction(nodeAction.action, true, nodeAction.object);
         }
     }
 
@@ -536,7 +435,7 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
             if (entryObjects) {
                 if (setStore) {
                     const entriesOptions: TableObjectGetOptions = {
-                        classMethod: this.getClassMethod(entryClassAttr)
+                        classMethod: getClassMethod(entryClassAttr)
                     };
 
                     if (entryTitleType === "attribute" && entryTitleAttr) {
@@ -615,7 +514,7 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
                 const { entryTitleType, entryTitleAttr, entryTitleNanoflow, entryClassAttr } = this.props;
 
                 const entriesOptions: TableObjectGetOptions = {
-                    classMethod: this.getClassMethod(entryClassAttr)
+                    classMethod: getClassMethod(entryClassAttr)
                 };
 
                 if (entryTitleType === "attribute" && entryTitleAttr) {
@@ -681,20 +580,9 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
 
     private executeAction(action: Action, showError = false, obj?: mendix.lib.MxObject): Promise<ActionReturn> {
         this.debug("executeAction", action, obj && obj.getGuid());
-        const { mxform } = this.props;
         const context = getObjectContextFromObjects(obj, this.props.mxObject);
 
-        if (action.microflow) {
-            return executeMicroflow(action.microflow, context, mxform, showError);
-        } else if (action.nanoflow) {
-            return executeNanoFlow(action.nanoflow, context, mxform, showError);
-        } else if (action.page) {
-            return openPage(action.page, context, showError);
-        }
-
-        return Promise.reject(
-            new Error(`No microflow/nanoflow/page defined for this action: ${JSON.stringify(action)}`)
-        );
+        return executeAction(action, showError, context, this.props.mxform);
     }
 
     private debug(...args: unknown[]): void {

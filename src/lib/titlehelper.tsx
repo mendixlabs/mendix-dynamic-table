@@ -1,5 +1,5 @@
 import { TitleDataSourceType, Nanoflow } from "../../typings/DynamicTableProps";
-import { Action, ActionReturn, NodeType } from "../DynamicTable";
+import { Action, ActionReturn, NodeType } from "./interfaces";
 import { ReactNode, createElement } from "react";
 import classNames from "classnames";
 import TemplateComponent from "react-mustache-template-component";

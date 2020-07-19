@@ -5,9 +5,9 @@ import ReactResizeDetector from "react-resize-detector";
 import { TableStore } from "../store/store";
 import { SelectionMode, DynamicTableSettingsProps } from "../../typings/DynamicTableProps";
 import Table, { TableRowSelection, ColumnProps, TableEventListeners } from "antd/es/table";
-import { TableRecord } from "../util/table";
+import { TableRecord } from "../lib/interfaces";
 import { SizeContainer } from "./SizeContainer";
-import { ClickCellType } from "../util/titlehelper";
+import { ClickCellType } from "../lib/titlehelper";
 import { Alerts } from "./Alerts";
 
 const DEBOUNCE = 250;
@@ -34,53 +34,15 @@ export interface DynamicTreeTableContainerProps {
 export class DynamicTreeTableContainer extends Component<DynamicTreeTableContainerProps, {}> {
     onExpand = this.expanderHandler.bind(this);
     onRowClassName = this.rowClassName.bind(this);
+    clearDebounce = this._clearDebounce.bind(this);
+    onRow = this._onRow.bind(this);
 
     private debounce: number | null = null;
 
     render(): ReactNode {
-        const { selectMode, clickToSelect, store, hideSelectBoxes, className, ui } = this.props;
+        const { selectMode, store, hideSelectBoxes, className, ui } = this.props;
 
         const removeValidation = store.removeValidationMessage.bind(store);
-
-        const clearDebounce = (): void => {
-            if (this.debounce !== null) {
-                clearTimeout(this.debounce);
-                this.debounce = null;
-            }
-        };
-
-        const onRow = (record: TableRecord): { [name: string]: () => void } => {
-            return {
-                onClick: (): void => {
-                    clearDebounce();
-                    this.debounce = window.setTimeout(() => {
-                        // this.onRowClick(record);
-                        if (selectMode && selectMode !== "none" && clickToSelect) {
-                            const selected = [...store.selectedRowsIds];
-                            const findKey = selected.findIndex(s => s === record.key);
-                            const isSelected = findKey !== -1;
-                            if (isSelected && selectMode === "single") {
-                                store.setSelected([]);
-                            } else if (isSelected && selectMode === "multi") {
-                                selected.splice(findKey, 1);
-                                store.setSelected(selected);
-                            } else if (!isSelected && selectMode === "single") {
-                                store.setSelected([record.key]);
-                            } else if (!isSelected && selectMode === "multi") {
-                                selected.push(record.key);
-                                store.setSelected(selected);
-                            }
-                        }
-                    }, DEBOUNCE);
-                },
-                onDoubleClick: (): void => {
-                    clearDebounce();
-                    this.debounce = window.setTimeout(() => {
-                        // this.onRowDblClick(record); // double click row
-                    }, DEBOUNCE);
-                }
-            };
-        };
 
         let rowSelection: TableRowSelection<TableRecord> | undefined;
 
@@ -130,7 +92,7 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
                     dataSource={store.tableRows}
                     loading={store.isLoading}
                     onExpand={this.onExpand}
-                    onRow={onRow}
+                    onRow={this.onRow()}
                     rowSelection={rowSelection}
                     pagination={false}
                     rowClassName={this.onRowClassName}
@@ -159,6 +121,52 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
                 {containerIfNotDisabled}
             </div>
         );
+    }
+
+    private _clearDebounce(): void {
+        if (this.debounce !== null) {
+            clearTimeout(this.debounce);
+            this.debounce = null;
+        }
+    }
+
+    private _onRow() {
+        const { selectMode, clickToSelect, store } = this.props;
+
+        const onRow = (record: TableRecord): { [name: string]: () => void } => {
+            return {
+                onClick: (): void => {
+                    this.clearDebounce();
+                    this.debounce = window.setTimeout(() => {
+                        // this.onRowClick(record);
+                        if (selectMode && selectMode !== "none" && clickToSelect) {
+                            const selected = [...store.selectedRowsIds];
+                            const findKey = selected.findIndex(s => s === record.key);
+                            const isSelected = findKey !== -1;
+                            if (isSelected && selectMode === "single") {
+                                store.setSelected([]);
+                            } else if (isSelected && selectMode === "multi") {
+                                selected.splice(findKey, 1);
+                                store.setSelected(selected);
+                            } else if (!isSelected && selectMode === "single") {
+                                store.setSelected([record.key]);
+                            } else if (!isSelected && selectMode === "multi") {
+                                selected.push(record.key);
+                                store.setSelected(selected);
+                            }
+                        }
+                    }, DEBOUNCE);
+                },
+                onDoubleClick: (): void => {
+                    this.clearDebounce();
+                    this.debounce = window.setTimeout(() => {
+                        // this.onRowDblClick(record); // double click row
+                    }, DEBOUNCE);
+                }
+            };
+        };
+
+        return onRow;
     }
 
     private getColumns(dataColumns: Array<ColumnProps<TableRecord>>): Array<ColumnProps<TableRecord>> {

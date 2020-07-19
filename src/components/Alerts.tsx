@@ -1,6 +1,6 @@
 import { Component, ReactNode, createElement } from "react";
 import classNames from "classnames";
-import { ValidationMessage } from "../util/validation";
+import { ValidationMessage } from "../lib/validation";
 import { observer } from "mobx-react";
 
 type TypeBootstrapStyle = "default" | "primary" | "success" | "info" | "inverse" | "warning" | "danger";
