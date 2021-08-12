@@ -1,8 +1,9 @@
 import { TitleDataSourceType, Nanoflow } from "../../typings/DynamicTableProps";
-import { Action, ActionReturn, NodeType } from "./interfaces";
+import { Action, NodeType } from "./interfaces";
 import { ReactNode, createElement } from "react";
 import classNames from "classnames";
 import TemplateComponent from "react-mustache-template-component";
+import { ActionReturnType } from "@jeltemx/mendix-react-widget-utils";
 
 export type ClickCellType = "single" | "double";
 
@@ -11,7 +12,7 @@ export interface GetTitleOptions {
     attribute: string;
     nanoflow: Nanoflow;
     nodeType: NodeType;
-    executeAction: (action: Action, showError: boolean, obj?: mendix.lib.MxObject) => Promise<ActionReturn>;
+    executeAction: (action: Action, showError: boolean, obj?: mendix.lib.MxObject) => Promise<ActionReturnType>;
     onClickMethod: (obj: mendix.lib.MxObject, type: NodeType) => Promise<void>;
     onDoubleClickMethod: (obj: mendix.lib.MxObject, type: NodeType) => Promise<void>;
     renderAsHTML?: boolean;

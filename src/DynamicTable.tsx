@@ -1,6 +1,5 @@
 import { Component, ReactNode, createElement } from "react";
 import { findDOMNode } from "react-dom";
-import { hot } from "react-hot-loader/root";
 import {
     fetchByXpath,
     getObjectContextFromObjects,
@@ -8,7 +7,9 @@ import {
     getObjects,
     ValidationMessage,
     entityIsPersistable,
-    executeAction
+    executeAction,
+    ActionReturnType,
+    debug
 } from "@jeltemx/mendix-react-widget-utils";
 
 import "./ui/DynamicTable.scss";
@@ -22,11 +23,14 @@ import { TitleMethod, TableObjectGetOptions, StaticTitleMethod } from "./store/o
 import { createHelperObject } from "./lib/helperobject";
 import { getTitleFromObject, ClickCellType, getStaticTitleFromObject } from "./lib/titlehelper";
 import { validateProps } from "./lib/validation";
-import { Action, NodeType, AxisSelection, ActionReturn, TableRecord } from "./lib/interfaces";
+import { Action, NodeType, AxisSelection, TableRecord } from "./lib/interfaces";
 import { getClassMethod, getSortMethod, prepareAction, ActionPreparation } from "./lib/methods";
 import { getPartialUIProps } from "./lib/props";
+import { createRef } from "react";
 
 class DynamicTable extends Component<DynamicTableContainerProps> {
+    ref = createRef<HTMLDivElement>();
+
     private store: TableStore;
     private widgetId?: string;
     private rowChildReference: string;
@@ -73,20 +77,29 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
         });
     }
 
-    componentDidUpdate(): void {
-        if (this.widgetId) {
-            const domNode = findDOMNode(this);
-            // @ts-ignore
-            domNode.setAttribute("widgetId", this.widgetId);
-        }
-    }
+    // componentDidUpdate(): void {
+    //     if (this.widgetId) {
+    //         const domNode = findDOMNode(this);
+    //         // @ts-ignore
+    //         domNode.setAttribute("widgetId", this.widgetId);
+    //     }
+    // }
 
     componentWillReceiveProps(nextProps: DynamicTableContainerProps): void {
-        if (!this.widgetId) {
-            const domNode = findDOMNode(this);
-            // @ts-ignore
-            this.widgetId = domNode.getAttribute("widgetId") || undefined;
+
+        if (!this.widgetId && this.ref.current) {
+            try {
+                const domNode = findDOMNode(this);
+                // @ts-ignore
+                this.widgetId = domNode.getAttribute("widgetId") || undefined;
+            } catch (error) {
+                const domNode = findDOMNode(this.ref.current);
+                // @ts-ignore
+                const alternativeID = domNode.getAttribute("data-mendix-id") || undefined;
+                this.widgetId = alternativeID;
+            }
         }
+
         this.store.setContext(nextProps.mxObject);
         if (nextProps.mxObject) {
             this.store.setLoading(true);
@@ -107,15 +120,17 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
         }
 
         return (
-            <DynamicTreeTableContainer
-                store={this.store}
-                selectMode={selectionMode}
-                hideSelectBoxes={selectHideCheckboxes}
-                expanderFunc={this.expanderFunc}
-                emptyClickHandler={this.clickEmptyHandler}
-                clickToSelect={selectClickSelect}
-                ui={getPartialUIProps(this.props)}
-            />
+            <div ref={this.ref} style={{height: "100%"}}>
+                <DynamicTreeTableContainer
+                    store={this.store}
+                    selectMode={selectionMode}
+                    hideSelectBoxes={selectHideCheckboxes}
+                    expanderFunc={this.expanderFunc}
+                    emptyClickHandler={this.clickEmptyHandler}
+                    clickToSelect={selectClickSelect}
+                    ui={getPartialUIProps(this.props)}
+                />
+            </div>
         );
     }
 
@@ -132,8 +147,9 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
     }
 
     private getRuntimeValidations(props: DynamicTableContainerProps): ValidationMessage[] {
+        const persist = entityIsPersistable(props.helperEntity);
         return validateProps(props, {
-            noPersistentHelper: props.helperEntity !== "" && entityIsPersistable(props.helperEntity)
+            noPersistentHelper: props.helperEntity !== "" && (persist !== null ? persist : false)
         });
     }
 
@@ -578,7 +594,7 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
         return obj;
     }
 
-    private executeAction(action: Action, showError = false, obj?: mendix.lib.MxObject): Promise<ActionReturn> {
+    private executeAction(action: Action, showError = false, obj?: mendix.lib.MxObject): Promise<ActionReturnType> {
         this.debug("executeAction", action, obj && obj.getGuid());
         const context = getObjectContextFromObjects(obj, this.props.mxObject);
 
@@ -586,11 +602,9 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
     }
 
     private debug(...args: unknown[]): void {
-        const id = this.props.friendlyId || this.widgetId;
-        if (window.logger) {
-            window.logger.debug(`${id}:`, ...args);
-        }
+        const id = this.props.friendlyId || this.widgetId || "mendix.filedropper.FileDropper";
+        debug(id, ...args);
     }
 }
 
-export default hot(DynamicTable);
+export default DynamicTable;

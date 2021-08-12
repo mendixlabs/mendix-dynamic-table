@@ -1,6 +1,6 @@
 // Copied from: https://github.com/mendix/widgets-resources/blob/master/packages-web/calendar/src/components/SizeContainer.ts
 
-import { CSSProperties, createElement, FunctionComponent, PropsWithChildren } from "react";
+import { CSSProperties, createElement, PropsWithChildren } from "react";
 import classNames from "classnames";
 
 export type HeightUnitType = "percentageOfWidth" | "percentageOfParent" | "pixels";
@@ -42,42 +42,38 @@ const getHeight = (heightUnit: HeightUnitType, height: number): CSSProperties =>
     return style;
 };
 
-export const SizeContainer: FunctionComponent<SizeProps> = ({
-    className,
-    widthUnit,
-    width,
-    heightUnit,
-    height,
-    children,
-    style
-}: PropsWithChildren<SizeProps>) => {
-    const styleWidth = widthUnit === "percentage" ? `${width}%` : `${width}px`;
+export const SizeContainer = ({
+        className,
+        widthUnit,
+        width,
+        heightUnit,
+        height,
+        children,
+        style
+    }: PropsWithChildren<SizeProps>): JSX.Element => {
+        const styleWidth = widthUnit === "percentage" ? `${width}%` : `${width}px`;
 
-    return createElement(
-        "div",
-        {
-            className: classNames((className || "dynamic-table") + "__size-box"),
-            style: {
+        return (<div
+            className={classNames((className || "dynamic-table") + "__size-box")}
+            style= {{
                 position: "relative",
                 width: styleWidth,
                 ...getHeight(heightUnit, height),
                 ...style
-            },
-            ref: parentHeight
-        },
-        createElement(
-            "div",
-            {
-                className: "size-box-inner",
-                style: {
+            }}
+            ref={parentHeight}
+        >
+            <div
+                className={"size-box-inner"}
+                style={{
                     position: "absolute",
                     top: "0",
                     right: "0",
                     bottom: "0",
                     left: "0"
-                }
-            },
-            children
-        )
-    );
-};
+                }}
+            >
+                {children}
+            </div>
+        </div>);
+    }

@@ -4,6 +4,8 @@
     "module": "es6",
     "types": ["mendix-client", "jest"],
     "experimentalDecorators": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   }
 }

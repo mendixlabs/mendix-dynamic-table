@@ -1,14 +1,19 @@
-import { Component, ReactNode, createElement, CSSProperties } from "react";
+import { Component, ReactNode, createElement, CSSProperties, Fragment, version, useEffect, createRef } from "react";
+
+console.log(version);
+
 import { observer } from "mobx-react";
 import classNames from "classnames";
 import ReactResizeDetector from "react-resize-detector";
 import { TableStore } from "../store/store";
 import { SelectionMode, DynamicTableSettingsProps } from "../../typings/DynamicTableProps";
-import Table, { TableRowSelection, ColumnProps, TableEventListeners } from "antd/es/table";
+import Table, { ColumnProps } from "antd/es/table";
+import { TableRowSelection } from "antd/es/table/interface";
 import { TableRecord } from "../lib/interfaces";
 import { SizeContainer } from "./SizeContainer";
 import { ClickCellType } from "../lib/titlehelper";
 import { Alerts } from "./Alerts";
+import { withResizeDetector } from "react-resize-detector";
 
 const DEBOUNCE = 250;
 
@@ -32,6 +37,8 @@ export interface DynamicTreeTableContainerProps {
 
 @observer
 export class DynamicTreeTableContainer extends Component<DynamicTreeTableContainerProps, {}> {
+    wrapper = createRef<HTMLDivElement>();
+
     onExpand = this.expanderHandler.bind(this);
     onRowClassName = this.rowClassName.bind(this);
     clearDebounce = this._clearDebounce.bind(this);
@@ -79,38 +86,45 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
         };
 
         const scrollY = ui.settingsTableLockHeaderRow ? ui.settingsHeight || true : false;
+
+        console.log(scrollY);
+
         const containerIfNotDisabled = store.disabled ? null : (
-            <SizeContainer
-                className={classNames("widget-dynamictable")}
-                width={ui.settingsWidth}
-                height={ui.settingsHeight}
-                widthUnit={ui.settingsWidthUnit}
-                heightUnit={ui.settingsHeightUnit}
-            >
-                <Table
-                    columns={this.getColumns(store.tableColumns)}
-                    dataSource={store.tableRows}
-                    loading={store.isLoading}
-                    onExpand={this.onExpand}
-                    onRow={this.onRow()}
-                    rowSelection={rowSelection}
-                    pagination={false}
-                    rowClassName={this.onRowClassName}
-                    scroll={{ x: store.width || true, y: scrollY }}
-                    size="small"
-                />
-                <ReactResizeDetector
-                    handleHeight
-                    handleWidth
-                    refreshMode="throttle"
-                    refreshRate={100}
-                    onResize={onResizeHandle}
-                />
-            </SizeContainer>
+            <Fragment>
+                <SizeContainer
+                    className={classNames("widget-dynamictable")}
+                    width={ui.settingsWidth}
+                    height={ui.settingsHeight}
+                    widthUnit={ui.settingsWidthUnit}
+                    heightUnit={ui.settingsHeightUnit}
+                >
+                    <Table
+                        columns={this.getColumns(store.tableColumns)}
+                        dataSource={store.tableRows}
+                        loading={store.isLoading}
+                        onExpand={this.onExpand}
+                        onRow={this.onRow()}
+                        rowSelection={rowSelection}
+                        pagination={false}
+                        rowClassName={this.onRowClassName}
+                        scroll={{ x: store.width || true, y: scrollY ? "100%" : "100%" }}
+                        size="small"
+                    />
+                    <ReactResizeDetector
+                        targetRef={this.wrapper}
+                        handleHeight
+                        handleWidth
+                        refreshMode="throttle"
+                        refreshRate={100}
+                        onResize={onResizeHandle}
+                    ></ReactResizeDetector>
+                </SizeContainer>
+            </Fragment>
         );
 
         return (
             <div
+                ref={this.wrapper}
                 className={classNames(
                     "widget-dynamictable-wrapper",
                     hideSelectBoxes ? "hide-selectboxes" : null,
@@ -183,7 +197,7 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
                 className: "left-column",
                 width: leftWidth,
                 fixed: leftFixed ? "left" : false,
-                onCell: (record: TableRecord): TableEventListeners => {
+                onCell: (record: TableRecord): any => {
                     return {
                         className: classNames(record._className, "first-column")
                     };
@@ -193,16 +207,16 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
                 const colProp: ColumnProps<TableRecord> = {
                     ...col,
                     width: cellWidth,
-                    onCell: (record: TableRecord): TableEventListeners => {
+                    onCell: (record: TableRecord): any => {
                         const empty =
                             col.dataIndex &&
-                            typeof record[col.dataIndex] !== "undefined" &&
-                            record[col.dataIndex] === null;
+                            typeof record[col.dataIndex as number] !== "undefined" &&
+                            record[col.dataIndex as number] === null;
                         const colGuid = col.dataIndex;
 
                         const extraClass =
                             col.key && record._classObj && record._classObj[col.key] ? record._classObj[col.key] : "";
-                        const opts: TableEventListeners = {
+                        const opts: any = {
                             className: classNames(
                                 col.className,
                                 record._className,
@@ -213,10 +227,10 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
 
                         if (empty && colGuid && record.key) {
                             opts.onClick = (): void => {
-                                emptyClickHandler && emptyClickHandler("single", colGuid, record.key);
+                                emptyClickHandler && emptyClickHandler("single", colGuid as string, record.key);
                             };
                             opts.onDoubleClick = (): void => {
-                                emptyClickHandler && emptyClickHandler("double", colGuid, record.key);
+                                emptyClickHandler && emptyClickHandler("double", colGuid as string, record.key);
                             };
                         }
 
