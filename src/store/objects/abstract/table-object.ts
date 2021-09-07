@@ -37,7 +37,7 @@ export class TableObject {
 
     fixTitle = flow(function*(this: TableObject) {
         if (this._titleMethod) {
-            const title = yield this._titleMethod(this._obj);
+            const title: string = yield this._titleMethod(this._obj);
             this._title = title;
         }
     });

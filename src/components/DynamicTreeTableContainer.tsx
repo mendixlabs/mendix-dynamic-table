@@ -87,8 +87,6 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
 
         const scrollY = ui.settingsTableLockHeaderRow ? ui.settingsHeight || true : false;
 
-        console.log(scrollY);
-
         const containerIfNotDisabled = store.disabled ? null : (
             <Fragment>
                 <SizeContainer
@@ -107,7 +105,7 @@ export class DynamicTreeTableContainer extends Component<DynamicTreeTableContain
                         rowSelection={rowSelection}
                         pagination={false}
                         rowClassName={this.onRowClassName}
-                        scroll={{ x: store.width || true, y: scrollY ? "100%" : "100%" }}
+                        // scroll={{ x: store.width || true, y: scrollY ? "100%" : "100%" }}
                         size="small"
                     />
                     <ReactResizeDetector

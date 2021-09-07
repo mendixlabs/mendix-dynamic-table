@@ -43,19 +43,20 @@ const getHeight = (heightUnit: HeightUnitType, height: number): CSSProperties =>
 };
 
 export const SizeContainer = ({
-        className,
-        widthUnit,
-        width,
-        heightUnit,
-        height,
-        children,
-        style
-    }: PropsWithChildren<SizeProps>): JSX.Element => {
-        const styleWidth = widthUnit === "percentage" ? `${width}%` : `${width}px`;
+    className,
+    widthUnit,
+    width,
+    heightUnit,
+    height,
+    children,
+    style
+}: PropsWithChildren<SizeProps>): JSX.Element => {
+    const styleWidth = widthUnit === "percentage" ? `${width}%` : `${width}px`;
 
-        return (<div
+    return (
+        <div
             className={classNames((className || "dynamic-table") + "__size-box")}
-            style= {{
+            style={{
                 position: "relative",
                 width: styleWidth,
                 ...getHeight(heightUnit, height),
@@ -75,5 +76,6 @@ export const SizeContainer = ({
             >
                 {children}
             </div>
-        </div>);
-    }
+        </div>
+    );
+};

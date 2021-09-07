@@ -86,7 +86,6 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
     // }
 
     componentWillReceiveProps(nextProps: DynamicTableContainerProps): void {
-
         if (!this.widgetId && this.ref.current) {
             try {
                 const domNode = findDOMNode(this);
@@ -120,7 +119,7 @@ class DynamicTable extends Component<DynamicTableContainerProps> {
         }
 
         return (
-            <div ref={this.ref} style={{height: "100%"}}>
+            <div ref={this.ref} style={{ height: "100%" }}>
                 <DynamicTreeTableContainer
                     store={this.store}
                     selectMode={selectionMode}
