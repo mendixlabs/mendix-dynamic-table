@@ -1,6 +1,4 @@
-import { Component, ReactNode, createElement, CSSProperties, Fragment, version, useEffect, createRef } from "react";
-
-console.log(version);
+import { Component, ReactNode, createElement, CSSProperties, Fragment, useEffect, createRef } from "react";
 
 import { observer } from "mobx-react";
 import classNames from "classnames";
